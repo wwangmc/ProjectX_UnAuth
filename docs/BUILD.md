@@ -21,6 +21,8 @@
 - 递归安装 `roothide/theos`，提供源码所需的 `roothide.h`。
 - 从 `theos/sdks` 安装含私有框架符号的 `iPhoneOS16.5.sdk`。
 - 使用已入库的 `libs/libGCDWebServers.a` 和 `headers/GCDWebServers/`。
+- 从固定提交源码编译 AltList 框架并安装到当前 runner 的 Theos；
+  设备上需由包管理器安装 `com.opa334.altlist` 依赖。
 - 保留原项目 `arm64` 架构和部署目标：rootfull 为 iOS 12.0，其他为 iOS 15.0。
   workflow 不增加 arm64e 或修改注入范围。
 - Theos 和 SDK 跟踪各自 master；安装步骤会打印实际提交 SHA，便于排查。

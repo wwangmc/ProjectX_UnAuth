@@ -47,7 +47,7 @@ ProjectX_PRIVATE_FRAMEWORKS = FrontBoardServices SpringBoardServices BackBoardSe
 ProjectX_FRAMEWORKS = UIKit Foundation MobileCoreServices CoreServices StoreKit IOKit Security CoreLocation CoreLocationUI
 ProjectX_CODESIGN_FLAGS = -Sent.plist
 ProjectX_CFLAGS = -fobjc-arc -D SUPPORT_IPAD=1 -D ENABLE_STATE_RESTORATION=1  -I./common -I./model
-# No AltList APIs are used by the application; do not require a local framework.
+ProjectX_EXTRA_FRAMEWORKS = AltList
 
 # Ensure app is installed to the correct location with proper permissions
 ProjectX_INSTALL_PATH = /Applications

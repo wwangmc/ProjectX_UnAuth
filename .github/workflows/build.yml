@@ -80,7 +80,7 @@ jobs:
           test -f libs/libGCDWebServers.a
           test -f headers/GCDWebServers/GCDWebServer.h
           xcrun lipo -info libs/libGCDWebServers.a
-          xcrun lipo -verify_arch arm64 libs/libGCDWebServers.a
+          xcrun lipo libs/libGCDWebServers.a -verify_arch arm64
 
       - name: Build deb package
         run: |

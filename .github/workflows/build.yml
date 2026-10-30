@@ -95,8 +95,11 @@ jobs:
             TARGET=iphone:clang:16.5:15.0 ARCHS=arm64 FINALPACKAGE=1 \
             THEOS_PACKAGE_SCHEME="$scheme" all \
             2>&1 | tee "build-$BUILD_MODE.log"
-          mkdir -p "$THEOS/lib"
-          cp -R "$altlist_checkout/.theos/obj/AltList.framework" "$THEOS/lib/"
+          framework_dir="$THEOS/lib"
+          if [ -n "$scheme" ]; then framework_dir="$THEOS/lib/iphone/$scheme"; fi
+          mkdir -p "$framework_dir"
+          cp -R "$altlist_checkout/.theos/obj/AltList.framework" "$framework_dir/"
+          test -f "$framework_dir/AltList.framework/Headers/ATLApplicationListMultiSelectionController.h"
 
       - name: Build deb package
         run: |

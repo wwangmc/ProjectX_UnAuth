@@ -1,6 +1,8 @@
 #import "SysExecutor.h"
 #include <spawn.h>
 #include <stdlib.h>
+#include <sys/wait.h>
+#include <unistd.h>
 #import <UIKit/UIKit.h>
 #import <roothide.h>
 

@@ -1,0 +1,109 @@
+name: Build Theos packages
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: theos-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Package (${{ matrix.mode }})
+    runs-on: macos-15
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Preserve this project's arm64 target in all three existing TYPE modes.
+          - mode: rootfull
+            type: 0
+          - mode: rootless
+            type: 1
+          - mode: roothide
+            type: 2
+    defaults:
+      run:
+        shell: bash
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_16.4.app/Contents/Developer
+      HOMEBREW_NO_AUTO_UPDATE: '1'
+      BUILD_TYPE: ${{ matrix.type }}
+      BUILD_MODE: ${{ matrix.mode }}
+
+    steps:
+      - name: Set build environment
+        run: echo "THEOS=$RUNNER_TEMP/theos" >> "$GITHUB_ENV"
+
+      - name: Checkout project
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          submodules: recursive
+
+      - name: Install build tools
+        run: |
+          test -d "$DEVELOPER_DIR"
+          xcodebuild -version
+          brew install make ldid xz
+          echo "$(brew --prefix make)/libexec/gnubin" >> "$GITHUB_PATH"
+
+      - name: Install RootHide Theos
+        # roothide.h is also imported by the rootfull/rootless daemon.
+        run: |
+          git clone --recursive --depth 1 --branch master \
+            https://github.com/roothide/theos.git "$THEOS"
+          git -C "$THEOS" rev-parse HEAD
+
+      - name: Install patched iOS 16.5 SDK
+        run: |
+          sdk_checkout="$RUNNER_TEMP/theos-sdks"
+          git clone --depth 1 --filter=blob:none --sparse --branch master \
+            https://github.com/theos/sdks.git "$sdk_checkout"
+          git -C "$sdk_checkout" sparse-checkout set iPhoneOS16.5.sdk
+          mkdir -p "$THEOS/sdks"
+          cp -R "$sdk_checkout/iPhoneOS16.5.sdk" "$THEOS/sdks/"
+          test -f "$THEOS/sdks/iPhoneOS16.5.sdk/SDKSettings.plist"
+          test -f "$THEOS/vendor/include/roothide.h"
+          git -C "$sdk_checkout" rev-parse HEAD
+
+      - name: Check bundled dependencies
+        run: |
+          test -f libs/libGCDWebServers.a
+          test -f headers/GCDWebServers/GCDWebServer.h
+          xcrun lipo -info libs/libGCDWebServers.a
+          xcrun lipo -verify_arch arm64 libs/libGCDWebServers.a
+
+      - name: Build deb package
+        run: |
+          set -o pipefail
+          make TYPE="$BUILD_TYPE" ARCHS=arm64 clean \
+            2>&1 | tee "build-$BUILD_MODE.log"
+          make -j"$(sysctl -n hw.ncpu)" TYPE="$BUILD_TYPE" \
+            ARCHS=arm64 FINALPACKAGE=1 package \
+            2>&1 | tee -a "build-$BUILD_MODE.log"
+
+      - name: Upload deb package
+        uses: actions/upload-artifact@v4
+        with:
+          name: ProjectX-${{ matrix.mode }}
+          path: packages/*.deb
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Upload build log
+        if: ${{ always() && !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-log-${{ matrix.mode }}
+          path: build-${{ matrix.mode }}.log
+          if-no-files-found: ignore
+          retention-days: 14

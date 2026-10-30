@@ -47,14 +47,16 @@ ProjectX_PRIVATE_FRAMEWORKS = FrontBoardServices SpringBoardServices BackBoardSe
 ProjectX_FRAMEWORKS = UIKit Foundation MobileCoreServices CoreServices StoreKit IOKit Security CoreLocation CoreLocationUI
 ProjectX_CODESIGN_FLAGS = -Sent.plist
 ProjectX_CFLAGS = -fobjc-arc -D SUPPORT_IPAD=1 -D ENABLE_STATE_RESTORATION=1  -I./common -I./model
-ProjectX_EXTRA_FRAMEWORKS = AltList
+# No AltList APIs are used by the application; do not require a local framework.
 
 # Ensure app is installed to the correct location with proper permissions
 ProjectX_INSTALL_PATH = /Applications
 
 ProjectXDaemon_FILES = $(wildcard daemon/*.m) $(wildcard model/*.m) ./common/ProfileManager.m ./common/SettingManager.m
 ProjectXDaemon_CFLAGS = -fobjc-arc -I./model -I./common -I./headers
-ProjectXDaemon_FRAMEWORKS = Foundation IOKit
+ProjectXDaemon_FRAMEWORKS = Foundation IOKit UIKit Security CFNetwork SystemConfiguration
+ProjectXDaemon_PRIVATE_FRAMEWORKS = MobileCoreServices
+ProjectXDaemon_LIBRARIES = sqlite3 z
 ProjectXDaemon_INSTALL_PATH = /usr/local/bin
 ProjectXDaemon_CODESIGN_FLAGS = -Sent.plist
 ProjectXDaemon_LDFLAGS = -framework IOKit

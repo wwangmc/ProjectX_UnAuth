@@ -1,4 +1,5 @@
 #import "DataGenManager.h"
+#import <Security/Security.h>
 #import <sys/sysctl.h> 
 #import <ifaddrs.h>
 #import <arpa/inet.h>

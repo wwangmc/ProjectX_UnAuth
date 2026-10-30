@@ -1,5 +1,4 @@
 #import "AppTabViewController.h"
-#import "AppTabViewController.h"
 #import "DaemonApiManager.h"
 
 @implementation AppTabViewController
@@ -17,4 +16,4 @@
     [[DaemonApiManager sharedManager] saveScopeApps:_selectedApplications];
 }
 
-@end 
+@end

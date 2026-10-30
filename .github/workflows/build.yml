@@ -3,9 +3,15 @@ name: Build Theos packages
 on:
   push:
     branches: [main, master]
+    tags: ['v*']
   pull_request:
     branches: [main, master]
   workflow_dispatch:
+    inputs:
+      publish_release:
+        description: Publish the control version after all checks pass
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -15,8 +21,22 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  test:
+    name: Foundation regression tests
+    runs-on: macos-15
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Check version metadata and run behavior tests
+        run: |
+          python3 scripts/check_metadata.py
+          python3 tests/run_tests.py
+
   build:
     name: Package (${{ matrix.mode }})
+    needs: test
     runs-on: macos-15
     timeout-minutes: 30
     strategy:
@@ -91,8 +111,10 @@ jobs:
           scheme=""
           if [ "$BUILD_TYPE" = "1" ]; then scheme=rootless; fi
           if [ "$BUILD_TYPE" = "2" ]; then scheme=roothide; fi
+          deployment=15.0
+          if [ "$BUILD_TYPE" = "0" ]; then deployment=13.0; fi
           make -C "$altlist_checkout" -j"$(sysctl -n hw.ncpu)" \
-            TARGET=iphone:clang:16.5:15.0 ARCHS=arm64 FINALPACKAGE=1 \
+            TARGET="iphone:clang:16.5:$deployment" ARCHS=arm64 FINALPACKAGE=1 \
             THEOS_PACKAGE_SCHEME="$scheme" all \
             2>&1 | tee "build-$BUILD_MODE.log"
           framework_dir="$THEOS/lib"
@@ -126,3 +148,62 @@ jobs:
           path: build-${{ matrix.mode }}.log
           if-no-files-found: ignore
           retention-days: 14
+
+  release:
+    name: Publish GitHub Release
+    needs: [test, build]
+    if: >-
+      github.event_name != 'pull_request' &&
+      (startsWith(github.ref, 'refs/tags/v') || inputs.publish_release ||
+      (github.ref == 'refs/heads/main' && contains(github.event.head_commit.message, '[release]')))
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: ProjectX-*
+          path: artifacts
+      - name: Assemble versioned assets
+        id: assets
+        run: |
+          python3 scripts/check_metadata.py
+          version="$(sed -n 's/^Version: //p' control)"
+          tag="v$version"
+          if [[ "$GITHUB_REF" == refs/tags/* && "${GITHUB_REF#refs/tags/}" != "$tag" ]]; then
+            echo 'Tag does not match the package version' >&2
+            exit 1
+          fi
+          if git rev-parse --verify "refs/tags/$tag" >/dev/null 2>&1; then
+            test "$(git rev-list -n 1 "$tag")" = "$GITHUB_SHA"
+          fi
+          mkdir -p release-assets
+          for mode in rootfull rootless roothide; do
+            mapfile -t packages < <(find "artifacts/ProjectX-$mode" -name '*.deb' -type f)
+            test "${#packages[@]}" -eq 1
+            cp "${packages[0]}" "release-assets/ProjectX-$version-$mode.deb"
+          done
+          (cd release-assets && sha256sum ./*.deb > SHA256SUMS)
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+      - name: Publish packages and checksums
+        env:
+          RELEASE_TAG: ${{ steps.assets.outputs.tag }}
+        run: |
+          test -f "docs/releases/$RELEASE_TAG.md"
+          if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
+            echo "Release $RELEASE_TAG already exists; keeping published assets."
+            exit 0
+          fi
+          gh release create "$RELEASE_TAG" release-assets/* \
+            --target "$GITHUB_SHA" \
+            --title "ProjectX UnAuth $RELEASE_TAG" \
+            --notes-file "docs/releases/$RELEASE_TAG.md" \
+            --latest

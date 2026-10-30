@@ -3,4 +3,5 @@ packages
 .DS_Store
 .idea
 include/.DS_Store
-
+__pycache__/
+*.pyc

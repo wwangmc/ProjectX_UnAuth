@@ -2,6 +2,8 @@
 #import <Foundation/Foundation.h>
 
 typedef void (^RequestCompletionHandler)(id responseData, NSError *error);
+// Transport/HTTP failures return an error; successful bodies may be JSON, text or data.
+// Network callbacks run on the session queue. Dispatch UI updates to the main queue.
 
 // GET请求
 void daemonGET(NSString *urlString, RequestCompletionHandler completion);

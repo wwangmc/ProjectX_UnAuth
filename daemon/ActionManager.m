@@ -32,6 +32,7 @@
     if(!activeBackupPath){
         // 首次新机
         activeBackupPath = [_profileManager genBackupDirectory];
+        if (!activeBackupPath) return;
         
     }
     // 创建备份存放目录
@@ -76,7 +77,7 @@
     NSMutableSet * loadApps = [[AppScopeManager sharedManager] loadPreferences];
     // 获取当前生效备份
     NSString * activeBackupPath = [_profileManager getActiveDataPath];
-    [_profileManager switchToProfile:profile];
+    if (![_profileManager switchToProfile:profile]) return;
     NSString * waitActiveBackupPath = [_profileManager getActiveDataPath];
 
     for (NSString * bundleId in loadApps){

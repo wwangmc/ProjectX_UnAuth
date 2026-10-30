@@ -10,56 +10,37 @@
 #import "ActionManager.h"
 #import "ProfileManager.h"
 #import "DBManager.h"
-
-NSDictionary* getJsonBody(GCDWebServerDataRequest *request,NSError *jsonError)
-{
-    return [NSJSONSerialization JSONObjectWithData:request.data
-                                                        options:kNilOptions
-                                                            error:&jsonError];
-}
-NSMutableSet * getSet(GCDWebServerDataRequest *request, NSError *error) 
-{
-    id jsonObject = [NSJSONSerialization JSONObjectWithData:request.data 
-                                                    options:kNilOptions 
-                                                      error:&error];
-    if (error) return nil;
-    
-    if ([jsonObject isKindOfClass:[NSArray class]]) {
-        return [NSMutableSet setWithArray:(NSArray *)jsonObject];
-    } 
-    
-    return nil;
-}
+#import "RequestValidation.h"
 
 GCDWebServerDataResponse* dataResponse(NSDictionary *jsonData)
 {
     GCDWebServerDataResponse *response = [GCDWebServerDataResponse responseWithJSONObject:jsonData];
-    [response setValue:@"*" forAdditionalHeader:@"Access-Control-Allow-Origin"];       
-    [response setValue:@"Content-Type" forAdditionalHeader:@"Access-Control-Allow-Headers"];   
+    [response setValue:@"*" forAdditionalHeader:@"Access-Control-Allow-Origin"];
+    [response setValue:@"Content-Type" forAdditionalHeader:@"Access-Control-Allow-Headers"];
     return response;
 }
 GCDWebServerDataResponse* staticSuccessResponse()
 {
     NSDictionary *jsonData = @{
         @"status": @"success"
-    };                      
+    };
     return dataResponse(jsonData);
 }
 GCDWebServerErrorResponse* missingParamResponse()
 {
     GCDWebServerErrorResponse *response = [GCDWebServerErrorResponse responseWithClientError:kGCDWebServerHTTPStatusCode_BadRequest
                                                         message:@"Missing parameter"];
-    [response setValue:@"*" forAdditionalHeader:@"Access-Control-Allow-Origin"];       
+    [response setValue:@"*" forAdditionalHeader:@"Access-Control-Allow-Origin"];
     [response setValue:@"Content-Type" forAdditionalHeader:@"Access-Control-Allow-Headers"];
-    return response;                                   
+    return response;
 }
 GCDWebServerErrorResponse* jsonFormatErrorResponse()
 {
     GCDWebServerErrorResponse* response = [GCDWebServerErrorResponse responseWithClientError:kGCDWebServerHTTPStatusCode_BadRequest
                                                             message:@"Invalid JSON"];
-    [response setValue:@"*" forAdditionalHeader:@"Access-Control-Allow-Origin"];       
+    [response setValue:@"*" forAdditionalHeader:@"Access-Control-Allow-Origin"];
     [response setValue:@"Content-Type" forAdditionalHeader:@"Access-Control-Allow-Headers"];
-    return response;   
+    return response;
 }
 @implementation WebServerManager
 
@@ -105,9 +86,9 @@ GCDWebServerErrorResponse* jsonFormatErrorResponse()
                       requestClass:[GCDWebServerDataRequest class] // 必须是 DataRequest 才能读取 Body
                       processBlock:^GCDWebServerResponse *(GCDWebServerDataRequest *request) {
 
-        NSError *error;
-        NSMutableSet *scopeSet = getSet(request,error);
-        if (error && scopeSet) {
+        NSError *error = nil;
+        NSMutableSet *scopeSet = PXStringSetFromJSONData(request.data, &error);
+        if (!scopeSet) {
             return jsonFormatErrorResponse();
         }
         [[AppScopeManager sharedManager] savePreferences:scopeSet];
@@ -116,7 +97,7 @@ GCDWebServerErrorResponse* jsonFormatErrorResponse()
 
     [webServer addHandlerForMethod:@"GET"
                               path:GET_SCOPE_APPS
-                      requestClass:[GCDWebServerRequest class] 
+                      requestClass:[GCDWebServerRequest class]
                       processBlock:^GCDWebServerResponse *(GCDWebServerRequest *request) {
         NSMutableSet *scopeSet = [[AppScopeManager sharedManager] loadPreferences];
 
@@ -128,7 +109,7 @@ GCDWebServerErrorResponse* jsonFormatErrorResponse()
 
     [webServer addHandlerForMethod:@"GET"
                               path:GET_PHONE_INFO
-                      requestClass:[GCDWebServerRequest class] 
+                      requestClass:[GCDWebServerRequest class]
                       processBlock:^GCDWebServerResponse *(GCDWebServerRequest *request) {
         PhoneInfo * phoneInfo = [PhoneInfo loadFromPrefs];
         return dataResponse([phoneInfo toDictionary]);
@@ -136,15 +117,15 @@ GCDWebServerErrorResponse* jsonFormatErrorResponse()
 
     [webServer addHandlerForMethod:@"POST"
                               path:SAVE_PHONE_INFO
-                   requestClass:[GCDWebServerDataRequest class] 
+                   requestClass:[GCDWebServerDataRequest class]
                       processBlock:^GCDWebServerResponse *(GCDWebServerDataRequest *request){
 
-        NSError *error;
-        NSDictionary *dict = getJsonBody(request,error);
-        if (error && dict) {
+        NSError *error = nil;
+        NSDictionary *dict = PXDictionaryFromJSONData(request.data, &error);
+        if (!dict) {
             return jsonFormatErrorResponse();
         }
-       
+
         BOOL success = [PhoneInfo saveDictionaryToPrefs:dict];
         if(success){
             return staticSuccessResponse();
@@ -157,45 +138,51 @@ GCDWebServerErrorResponse* jsonFormatErrorResponse()
 
     [webServer addHandlerForMethod:@"POST"
                               path:REMOVE_BACKUP
-                        requestClass:[GCDWebServerDataRequest class] 
+                        requestClass:[GCDWebServerDataRequest class]
                         processBlock:^GCDWebServerResponse *(GCDWebServerDataRequest *request){
-                NSError *error;
-        NSDictionary *dict = getJsonBody(request,error);
-        if (error && dict) {
+        NSError *error = nil;
+        NSDictionary *dict = PXDictionaryFromJSONData(request.data, &error);
+        if (!dict) {
             return jsonFormatErrorResponse();
         }
+        if (![dict[@"id"] isKindOfClass:[NSString class]] || ![dict[@"id"] length]) return missingParamResponse();
         [[ActionManager sharedManager] removeBackup:dict[@"id"]];
         return staticSuccessResponse();
     }];
     [webServer addHandlerForMethod:@"POST"
                               path:RENAME_BACKUP
-                        requestClass:[GCDWebServerDataRequest class] 
+                        requestClass:[GCDWebServerDataRequest class]
                         processBlock:^GCDWebServerResponse *(GCDWebServerDataRequest *request){
-        NSError *error;
-        NSDictionary *dict = getJsonBody(request,error);
-        if (error && dict) {
+        NSError *error = nil;
+        NSDictionary *dict = PXDictionaryFromJSONData(request.data, &error);
+        if (!dict) {
             return jsonFormatErrorResponse();
         }
-        [[ProfileManager sharedManager] renameProfile:dict[@"id"] to:dict[@"name"]];
+        if (![dict[@"id"] isKindOfClass:[NSString class]] || ![dict[@"id"] length]) return missingParamResponse();
+        if (![dict[@"name"] isKindOfClass:[NSString class]] || ![dict[@"name"] length]) return missingParamResponse();
+        if (![[ProfileManager sharedManager] renameProfile:dict[@"id"] to:dict[@"name"]]) {
+            return [GCDWebServerErrorResponse responseWithClientError:409 message:@"Profile could not be saved"];
+        }
         return staticSuccessResponse();
     }];
 
     [webServer addHandlerForMethod:@"POST"
                               path:SWITCH_BACKUP
-                        requestClass:[GCDWebServerDataRequest class] 
+                        requestClass:[GCDWebServerDataRequest class]
                         processBlock:^GCDWebServerResponse *(GCDWebServerDataRequest *request){
-        NSError *error;
-        NSDictionary *dict = getJsonBody(request,error);
-        if (error && dict) {
+        NSError *error = nil;
+        NSDictionary *dict = PXDictionaryFromJSONData(request.data, &error);
+        if (!dict) {
             return jsonFormatErrorResponse();
         }
+        if (![dict[@"id"] isKindOfClass:[NSString class]] || ![dict[@"id"] length]) return missingParamResponse();
         [[ActionManager sharedManager] switchBackup:dict[@"id"]];
         return staticSuccessResponse();
     }];
 
     [webServer addHandlerForMethod:@"GET"
                               path:GET_ALL_CARRIER
-                      requestClass:[GCDWebServerRequest class] 
+                      requestClass:[GCDWebServerRequest class]
                       processBlock:^GCDWebServerResponse *(GCDWebServerRequest *request) {
         NSArray<NSDictionary *> * data = [[DBManager sharedManager] query:@"select DISTINCT code from operator"];
          return dataResponse(@{
@@ -206,7 +193,7 @@ GCDWebServerErrorResponse* jsonFormatErrorResponse()
 
     [webServer addHandlerForMethod:@"GET"
                               path:GET_ALL_VERSIONS
-                      requestClass:[GCDWebServerRequest class] 
+                      requestClass:[GCDWebServerRequest class]
                       processBlock:^GCDWebServerResponse *(GCDWebServerRequest *request) {
         NSArray<NSDictionary *> * data = [[DBManager sharedManager] query:@"select version from KMOS"];
         return dataResponse(@{

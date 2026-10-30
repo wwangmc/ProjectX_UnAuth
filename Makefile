@@ -11,7 +11,7 @@ ROOTFULL = 0
 ROOTLESS = 1
 ROOTHIDE = 2
 
-# 默认使用 rootfull (0)，可通过命令行覆盖，如 `make TYPE=1` 选择 rootless
+# 默认使用 rootless (1)，可通过命令行覆盖，如 make TYPE=0
 TYPE ?= $(ROOTLESS)
 
 TARGET = iphone:clang:16.5:15.0
@@ -19,8 +19,9 @@ ifeq ($(TYPE), $(ROOTLESS))
     THEOS_PACKAGE_SCHEME = rootless
 else ifeq ($(TYPE), $(ROOTHIDE))
     THEOS_PACKAGE_SCHEME = roothide
-else 
-	TARGET = iphone:clang:16.5:12.0
+else
+	# The bundled GCDWebServers library was built for iOS 13.0 or newer.
+	TARGET = iphone:clang:16.5:13.0
 endif
 
 include $(THEOS)/makefiles/common.mk
@@ -43,7 +44,7 @@ ProjectX_FILES = $(wildcard *.m) $(wildcard common/*.m) $(wildcard model/*.m)
 ProjectX_RESOURCE_DIRS = Assets.xcassets
 ProjectX_RESOURCE_FILES = Info.plist Icon.png LaunchScreen.storyboard
 ProjectX_PRIVATE_FRAMEWORKS = FrontBoardServices SpringBoardServices BackBoardServices StoreKitUI MobileCoreServices
-# ProjectX_LDFLAGS = -framework CoreData -framework UIKit -framework Foundation 
+# ProjectX_LDFLAGS = -framework CoreData -framework UIKit -framework Foundation
 ProjectX_FRAMEWORKS = UIKit Foundation MobileCoreServices CoreServices StoreKit IOKit Security CoreLocation CoreLocationUI
 ProjectX_CODESIGN_FLAGS = -Sent.plist
 ProjectX_CFLAGS = -fobjc-arc -D SUPPORT_IPAD=1 -D ENABLE_STATE_RESTORATION=1  -I./common -I./model
@@ -71,5 +72,3 @@ include $(THEOS_MAKE_PATH)/tool.mk
 
 
 export CFLAGS = -fobjc-arc -Wno-error
-
-

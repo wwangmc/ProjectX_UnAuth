@@ -65,8 +65,8 @@ static NSData *PXFormBody(NSDictionary *parameters) {
     return [[parts componentsJoinedByString:@"&"] dataUsingEncoding:NSUTF8StringEncoding];
 }
 
-static void PXSendRequest(NSString *urlString, NSString *method, id parameters,
-                          NSDictionary *headers, RequestCompletionHandler completion) {
+static void PXSendUsingSession(NSString *urlString, NSString *method, id parameters,
+                          NSDictionary *headers, RequestCompletionHandler completion, NSURLSession *session, NSTimeInterval timeout) {
     NSURL *url = [urlString isKindOfClass:[NSString class]] ? [NSURL URLWithString:urlString] : nil;
     NSString *scheme = url.scheme.lowercaseString;
     if (!url.host.length || (![scheme isEqualToString:@"http"] && ![scheme isEqualToString:@"https"])) {
@@ -75,7 +75,7 @@ static void PXSendRequest(NSString *urlString, NSString *method, id parameters,
     }
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
     request.HTTPMethod = method;
-    request.timeoutInterval = 10;
+    request.timeoutInterval = timeout;
     [request setValue:@"application/json" forHTTPHeaderField:@"Accept"];
     [headers enumerateKeysAndObjectsUsingBlock:^(id key, id value, BOOL *stop) {
         [request setValue:[value description] forHTTPHeaderField:[key description]];
@@ -96,7 +96,7 @@ static void PXSendRequest(NSString *urlString, NSString *method, id parameters,
             [request setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
         }
     }
-    [[PXHTTPSession() dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+    [[session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
         if (error) {
             if (completion) completion(nil, error);
             return;
@@ -115,6 +115,20 @@ static void PXSendRequest(NSString *urlString, NSString *method, id parameters,
         }
         if (completion) completion(body ?: @{@"status": @"success", @"code": @(status)}, nil);
     }] resume];
+}
+static void PXSendRequest(NSString *urlString, NSString *method, id parameters,
+                          NSDictionary *headers, RequestCompletionHandler completion) {
+    PXSendUsingSession(urlString,method,parameters,headers,completion,PXHTTPSession(),10);
+}
+void daemonCommandPOST(NSString *path,id parameters,RequestCompletionHandler completion) {
+    static NSURLSession *session; static dispatch_once_t once;
+    dispatch_once(&once,^{
+        NSURLSessionConfiguration *config=NSURLSessionConfiguration.defaultSessionConfiguration;
+        config.connectionProxyDictionary=@{}; config.timeoutIntervalForRequest=600;
+        config.timeoutIntervalForResource=3600; config.requestCachePolicy=NSURLRequestReloadIgnoringLocalCacheData;
+        session=[NSURLSession sessionWithConfiguration:config];
+    });
+    PXSendUsingSession([PXDaemonURL stringByAppendingString:path],@"POST",parameters,nil,completion,session,600);
 }
 
 void daemonGET(NSString *path, RequestCompletionHandler completion) {

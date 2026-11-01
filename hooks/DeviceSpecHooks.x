@@ -1,3 +1,4 @@
+#import "PXConfiguration.h"
 #import "ProjectXLogging.h"
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
@@ -164,7 +165,7 @@ static CGSize parseResolution(NSString *resolutionString) {
 %hook UIScreen
 
 // For screen density
-- (CGFloat)native_scale {
+- (CGFloat)nativeScale {
     CGFloat originalScale = %orig;
     
     DeviceModel *model = CurrentPhoneInfo().deviceModel;
@@ -208,12 +209,12 @@ static CGSize parseResolution(NSString *resolutionString) {
     
     // Get the device memory from specs (in GB)
     NSInteger deviceMemoryGB = [model.deviceMemory integerValue];
-    if (deviceMemoryGB <= 0) {
+    if (PXDeviceMemoryBytes(CurrentPhoneInfo().deviceModel) == 0) {
         return originalMemory;
     }
     
     // Convert GB to bytes
-    unsigned long long spoofedMemory = deviceMemoryGB * 1024 * 1024 * 1024;
+    unsigned long long spoofedMemory = PXDeviceMemoryBytes(model);
     
     // Log the change the first time
     static BOOL loggedMemory = NO;
@@ -249,12 +250,12 @@ static CGSize parseResolution(NSString *resolutionString) {
     
     // Get the device memory from specs (in GB)
     NSInteger deviceMemoryGB = [model.deviceMemory integerValue];
-    if (deviceMemoryGB <= 0) {
+    if (PXDeviceMemoryBytes(CurrentPhoneInfo().deviceModel) == 0) {
         return originalAvailableMemory;
     }
     
     // Calculate total memory
-    unsigned long long totalMemory = deviceMemoryGB * 1024 * 1024 * 1024;
+    unsigned long long totalMemory = PXDeviceMemoryBytes(CurrentPhoneInfo().deviceModel);
     
     // Calculate free memory based on typical iOS behavior
     float freePercentage = getFreeMemoryPercentage();
@@ -1001,12 +1002,12 @@ static kern_return_t hook_host_statistics64(host_t host, host_flavor_t flavor, h
     
     // Get the device memory from specs (in GB)
     NSInteger deviceMemoryGB = [model.deviceMemory integerValue];
-    if (deviceMemoryGB <= 0) {
+    if (PXDeviceMemoryBytes(CurrentPhoneInfo().deviceModel) == 0) {
         return result;
     }
     
     // Calculate total memory in bytes
-    unsigned long long totalMemory = deviceMemoryGB * 1024 * 1024 * 1024;
+    unsigned long long totalMemory = PXDeviceMemoryBytes(CurrentPhoneInfo().deviceModel);
     
     // Handle specific host info types
     if (flavor == HOST_VM_INFO64 || flavor == HOST_VM_INFO) {

@@ -34,6 +34,8 @@
     <string>2.5.2</string>
     <key>LSRequiresIPhoneOS</key>
     <true/>
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>在你选择清理相册时，读取并删除你允许访问的照片和视频。</string>
     <key>UIDeviceFamily</key>
     <array>
         <integer>1</integer>

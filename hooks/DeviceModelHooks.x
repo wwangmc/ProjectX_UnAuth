@@ -1,3 +1,4 @@
+#import "PXConfiguration.h"
 #import "DataManager.h"
 #import "ProjectXLogging.h"
 #import <Foundation/Foundation.h>
@@ -308,14 +309,13 @@ static int hook_sysctlbyname(const char *name, void *oldp, size_t *oldlenp, void
     }
     // Handle memory-related sysctls
     else if (strcmp(name, "hw.memsize") == 0 || strcmp(name, "hw.physmem") == 0) {
-        // Get the device memory from specs (in GB)
-        NSInteger deviceMemoryGB = [CurrentPhoneInfo().deviceModel.deviceMemory integerValue];
-        if (deviceMemoryGB <= 0) {
+        // Native memory APIs share the generated physical byte count.
+        if (PXDeviceMemoryBytes(CurrentPhoneInfo().deviceModel) == 0) {
             return origResult;
         }
         
         // Calculate total memory in bytes
-        unsigned long long totalMemory = deviceMemoryGB * 1024 * 1024 * 1024;
+        unsigned long long totalMemory = PXDeviceMemoryBytes(CurrentPhoneInfo().deviceModel);
         
         // Different sysctls might return different size types
         if (*oldlenp == sizeof(uint64_t)) {
@@ -332,13 +332,13 @@ static int hook_sysctlbyname(const char *name, void *oldp, size_t *oldlenp, void
         
         // Get the device memory from specs (in GB)
         NSInteger deviceMemoryGB = [model.deviceMemory integerValue];
-        if (deviceMemoryGB <= 0) {
+        if (PXDeviceMemoryBytes(CurrentPhoneInfo().deviceModel) == 0) {
             return origResult;
         }
         
         // Calculate realistic swap values based on device memory
         // iOS typically uses swap space proportional to RAM
-        uint64_t totalMemory = deviceMemoryGB * 1024 * 1024 * 1024;
+        uint64_t totalMemory = PXDeviceMemoryBytes(model);
         
         // Typical iOS swap is ~50-100% of RAM depending on device
         float swapRatio = (deviceMemoryGB >= 4) ? 0.5 : 1.0;  // Less swap on high-RAM devices

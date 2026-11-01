@@ -133,6 +133,8 @@ int main(int argc, const char **argv) {
     @autoreleasepool {
         CHECK(argc == 3);
         TestRequestValidation();
+        extern void PXRunFeatureTests(NSString *directory);
+        PXRunFeatureTests([[NSString stringWithUTF8String:argv[2]] stringByDeletingLastPathComponent]);
         TestProfiles([NSString stringWithUTF8String:argv[2]]);
         TestHTTP([NSString stringWithUTF8String:argv[1]]);
         printf("PASS: %lu checks\n", (unsigned long)checks);

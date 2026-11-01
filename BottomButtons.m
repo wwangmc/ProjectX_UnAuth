@@ -298,14 +298,13 @@
         dispatch_async(dispatch_get_main_queue(), ^{
             [[LoadingView sharedInstance] hide];
             
-            // 处理结果 可改为弹窗
-            // if (error) {
-            //     NSLog(@"请求失败: %@", error);
-            //     [self showErrorMessage:error.localizedDescription];
-            // } else {
-            //     NSLog(@"请求成功: %@", response);
-            //     [self handleSuccessResponse:response];
-            // }
+            if (error) {
+                UIAlertController *alert=[UIAlertController alertControllerWithTitle:@"新机失败" message:error.localizedDescription preferredStyle:UIAlertControllerStyleAlert];
+                [alert addAction:[UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:nil]];
+                [[self topViewController] presentViewController:alert animated:YES completion:nil];
+            } else {
+                [[NSNotificationCenter defaultCenter] postNotificationName:@"ProjectXCommandFinished" object:nil];
+            }
         });
     }];
 }

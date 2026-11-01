@@ -1,0 +1,121 @@
+{
+  "verified_at_utc": "2026-11-01T04:38:05.864217+00:00",
+  "scope": "Local compilation, package inspection, Foundation/ABI tests and native macOS arm64 automatic +load interception. No physical iOS device validation.",
+  "sdk": "iPhoneOS16.5.sdk",
+  "theos": {
+    "distribution": "roothide/theos",
+    "commit": "e84ae20",
+    "temporary_roothide_AltList_commit": "9db09f92eff0404ae7fa9c2fe6c25ba13d5e02d7",
+    "global_dependencies_modified": false
+  },
+  "test_checks": {
+    "sdk_behavior": 341,
+    "sdk_signature": 170,
+    "sdk_abi": 95,
+    "sdk_loader": 103,
+    "feature": 86,
+    "existing": 123,
+    "total": 918
+  },
+  "default_host_checks": 849,
+  "early_load_integration": {
+    "host": "macOS arm64",
+    "backend": "Dobby (test executable only)",
+    "backend_commit": "5dfc8546954ce3b3198132ab13fddb89ee92cdd7",
+    "target_class_count": 5,
+    "enabled_original_initializations_per_target": 0,
+    "disabled_original_initializations_per_target": 1,
+    "non_target_original_initializations": 1,
+    "nested_and_worker_thread_loads_passed": true,
+    "backend_failure_passes_original": true,
+    "late_activation_does_not_replay_initialization": true,
+    "ios_backend": "existing Substrate/compatible backend; Dobby is not linked into the iOS package"
+  },
+  "static_analyzer": {
+    "files": [
+      "hooks/PXSDKEarlyLoad.m",
+      "hooks/PXSDKCompatibility.m"
+    ],
+    "diagnostics": 0
+  },
+  "source_files_sha256_manifest_digest": "b2ef8114dead046d3421acdd0f578b090f657e387872975ed9535f85a8ad398a",
+  "packages": [
+    {
+      "mode": "rootless",
+      "exit_code": 0,
+      "package": "packages/com.hydra.projectx_2.5.2_iphoneos-arm64_rootless.deb",
+      "sha256": "e4a398de64656654fe3688fa3a97a9439263a60e0cfb6ca1607092d73a539ee4",
+      "binaries": [
+        {
+          "path": "var/jb/Applications/ProjectX.app/ProjectX",
+          "architecture": "arm64"
+        },
+        {
+          "path": "var/jb/Library/MobileSubstrate/DynamicLibraries/ProjectXTweak.dylib",
+          "architecture": "arm64"
+        },
+        {
+          "path": "var/jb/usr/local/bin/ProjectXDaemon",
+          "architecture": "arm64"
+        }
+      ],
+      "framework_checks": {
+        "AVFoundation": true,
+        "AVFAudio_absent": true,
+        "AppTrackingTransparency_weak": true
+      }
+    },
+    {
+      "mode": "rootfull",
+      "exit_code": 0,
+      "package": "packages/com.hydra.projectx_2.5.2_iphoneos-arm_rootfull.deb",
+      "sha256": "8ad452cbb11a59565adc5812b9e722db4e5072f0849b32ad537fd8e1f0d66b8d",
+      "binaries": [
+        {
+          "path": "Applications/ProjectX.app/ProjectX",
+          "architecture": "arm64"
+        },
+        {
+          "path": "Library/MobileSubstrate/DynamicLibraries/ProjectXTweak.dylib",
+          "architecture": "arm64"
+        },
+        {
+          "path": "usr/local/bin/ProjectXDaemon",
+          "architecture": "arm64"
+        }
+      ],
+      "framework_checks": {
+        "AVFoundation": true,
+        "AVFAudio_absent": true,
+        "AppTrackingTransparency_weak": true
+      }
+    },
+    {
+      "mode": "roothide",
+      "exit_code": 0,
+      "package": "packages/com.hydra.projectx_2.5.2_iphoneos-arm64e_roothide.deb",
+      "sha256": "849943851cfc2cdc0bb68cb4c4697a046e3d50a68f54784d766f1f805a2c1a6a",
+      "binaries": [
+        {
+          "path": "Applications/ProjectX.app/ProjectX",
+          "architecture": "arm64"
+        },
+        {
+          "path": "Library/MobileSubstrate/DynamicLibraries/ProjectXTweak.dylib",
+          "architecture": "arm64"
+        },
+        {
+          "path": "usr/local/bin/ProjectXDaemon",
+          "architecture": "arm64"
+        }
+      ],
+      "roothide_AltList_loader_path_verified": true,
+      "framework_checks": {
+        "AVFoundation": true,
+        "AVFAudio_absent": true,
+        "AppTrackingTransparency_weak": true
+      }
+    }
+  ],
+  "remaining": "F14/F15 baseline code and host checks are complete. F12, F28, F29 remain partial. No iOS device validation; unknown loader entry forms fail open and already-completed initialization cannot be undone."
+}

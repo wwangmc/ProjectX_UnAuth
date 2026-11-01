@@ -3,6 +3,18 @@
 #import "DaemonApi.h"
 
 @implementation DaemonApiManager
+- (void)executeCommand:(NSString *)command parameters:(NSDictionary *)parameters completion:(void(^)(id,NSError *))completion {
+    daemonCommandPOST(EXECUTE_COMMAND,@{@"command":command,@"parameters":parameters ?: @{}},^(id response,NSError *error) {
+        id details=error.userInfo[@"responseData"];
+        if (error && [details isKindOfClass:NSDictionary.class] && [details[@"message"] isKindOfClass:NSString.class]) {
+            NSMutableDictionary *info=[error.userInfo mutableCopy]; info[NSLocalizedDescriptionKey]=details[@"message"];
+            error=[NSError errorWithDomain:error.domain code:error.code userInfo:info];
+        }
+        if (!error && (![response isKindOfClass:NSDictionary.class] || ![response[@"status"] isEqual:@"success"]))
+            error=[NSError errorWithDomain:@"ProjectX" code:400 userInfo:@{NSLocalizedDescriptionKey:@"后台操作失败"}];
+        if (completion) completion(error?nil:response[@"data"],error);
+    });
+}
 + (instancetype)sharedManager {
     static DaemonApiManager *sharedManager = nil;
     static dispatch_once_t onceToken;
@@ -54,7 +66,6 @@
     dispatch_semaphore_t semaphore = dispatch_semaphore_create(0); // 创建信号量
     daemonGET(GET_PHONE_INFO,^(id jsonResponse, NSError *error) {
         if ([jsonResponse isKindOfClass:[NSDictionary class]]) {
-            NSDictionary *dict = (NSDictionary *)jsonResponse;
             phoneInfo = [PhoneInfo fromDictionary:jsonResponse];
         }
         dispatch_semaphore_signal(semaphore); 
@@ -71,39 +82,39 @@
 }
 
 - (void) newPhone:(void(^)(id response, NSError *error))completion{
-    daemonGET(NEW_PHONE, ^(id response, NSError *error) {
+    [self executeCommand:@"newPhone" parameters:@{} completion:^(id response, NSError *error) {
         // 如果有回调，执行回调
         if (completion) {
             completion(response, error);
         }
-    });
+    }];
 }
 
 - (void) removeBackup:(Profile *)profile comp:(void(^)(id response, NSError *error))completion{
-    daemonPOST(REMOVE_BACKUP,[profile toDictionary], ^(id response, NSError *error) {
+    [self executeCommand:@"deleteProfiles" parameters:@{@"ids":@[profile.id]} completion:^(id response, NSError *error) {
         // 如果有回调，执行回调
         if (completion) {
             completion(response, error);
         }
-    });
+    }];
 }
 
 - (void) renameBackup:(Profile *)profile comp:(void(^)(id response, NSError *error))completion{
-    daemonPOST(RENAME_BACKUP,[profile toDictionary], ^(id response, NSError *error) {
+    [self executeCommand:@"renameProfile" parameters:[profile toDictionary] completion:^(id response, NSError *error) {
         // 如果有回调，执行回调
         if (completion) {
             completion(response, error);
         }
-    });
+    }];
 }
 
 - (void) switchBackup:(Profile *)profile comp:(void(^)(id response, NSError *error))completion{
-    daemonPOST(SWITCH_BACKUP,[profile toDictionary], ^(id response, NSError *error) {
+    [self executeCommand:@"switchProfile" parameters:[profile toDictionary] completion:^(id response, NSError *error) {
         // 如果有回调，执行回调
         if (completion) {
             completion(response, error);
         }
-    });
+    }];
 }
 - (NSArray *) getAllCarrier{
     __block NSArray *dataArray = @[];

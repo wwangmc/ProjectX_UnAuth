@@ -16,4 +16,5 @@
 - (void) switchBackup:(Profile *)profile comp:(void(^)(id response, NSError *error))completion;
 - (NSArray *) getAllCarrier;
 - (NSArray *) getAllVersions;
+- (void)executeCommand:(NSString *)command parameters:(NSDictionary *)parameters completion:(void(^)(id result,NSError *error))completion;
 @end

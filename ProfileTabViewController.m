@@ -1,4 +1,5 @@
 #import "ProfileTabViewController.h"
+#import "PXToolsViewController.h"
 #import "ProfileManager.h"
 #import "DaemonApiManager.h"
 #import "LoadingView.h"
@@ -54,6 +55,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadAfterCommand:) name:@"ProjectXCommandFinished" object:nil];
     self.filteredProfiles = [NSMutableArray array];
     self.isSearchActive = NO;
     [self setupUI];
@@ -1047,6 +1049,7 @@ static void darwinNotificationCallback(
     [[DaemonApiManager sharedManager] switchBackup:profile comp:^(id response, NSError *error) {
         dispatch_async(dispatch_get_main_queue(), ^{
             [[LoadingView sharedInstance] hide];
+            if (error) { [self showOperationError:error]; return; }
 
                 
             // Show success message
@@ -1096,6 +1099,7 @@ static void darwinNotificationCallback(
             [[DaemonApiManager sharedManager] renameBackup:profile comp:^(id response, NSError *error) {
                 dispatch_async(dispatch_get_main_queue(), ^{
                     [[LoadingView sharedInstance] hide];
+            if (error) { [self showOperationError:error]; return; }
                 
                     // Show success message
                     UIAlertController *successAlert = [UIAlertController alertControllerWithTitle:@"Profile Renamed"
@@ -1165,10 +1169,10 @@ static void darwinNotificationCallback(
         // Show loading indicator
         [[LoadingView sharedInstance] showWithMessage:@"处理中"];
         
-        [manager remove:profile];
         [[DaemonApiManager sharedManager] removeBackup:profile comp:^(id response, NSError *error){
             dispatch_async(dispatch_get_main_queue(), ^{
                 [[LoadingView sharedInstance] hide];
+            if (error) { [self showOperationError:error]; return; }
                 
                 // Reload the table view
                 [self.tableView reloadData];
@@ -1330,14 +1334,17 @@ static void darwinNotificationCallback(
 
 
 
-- (void)importExportButtonTapped:(UIButton *)sender {
-    // To be implemented later
-    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"导入/导出"
-                                                               message:@"Import/Export functionality will be configured later."
-                                                        preferredStyle:UIAlertControllerStyleAlert];
-    
-    [alert addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil]];
+- (void)reloadAfterCommand:(NSNotification *)notification {
+    [self loadProfilesFromDisk];
+}
+- (void)showOperationError:(NSError *)error {
+    [self loadProfilesFromDisk];
+    UIAlertController *alert=[UIAlertController alertControllerWithTitle:@"操作失败" message:error.localizedDescription preferredStyle:UIAlertControllerStyleAlert];
+    [alert addAction:[UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:nil]];
     [self presentViewController:alert animated:YES completion:nil];
+}
+- (void)importExportButtonTapped:(UIButton *)sender {
+    [self.navigationController pushViewController:[PXToolsViewController new] animated:YES];
 }
 
 - (void)trashAllButtonTapped:(UIButton *)sender {
@@ -1356,46 +1363,16 @@ static void darwinNotificationCallback(
 }
 
 - (void)deleteAllProfiles {
-    // Show loading indicator
     [[LoadingView sharedInstance] showWithMessage:@"处理中"];
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        NSError *error = nil;
-        
-        if (error) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [[LoadingView sharedInstance] hide];
-                
-                UIAlertController *errorAlert = [UIAlertController alertControllerWithTitle:@"Error"
-                                                                                   message:[NSString stringWithFormat:@"Failed to access profiles directory: %@", error.localizedDescription]
-                                                                            preferredStyle:UIAlertControllerStyleAlert];
-                [errorAlert addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil]];
-                [self presentViewController:errorAlert animated:YES completion:nil];
-            });
-            return;
-        }
-        
-
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [[LoadingView sharedInstance] hide];
-            // TODO clearAll
-
-            // Reload profiles from disk
-            [self loadProfilesFromDisk];
-            
-            // Show results
-            NSString *resultMessage;
-                        
-            UIAlertController *resultAlert = [UIAlertController alertControllerWithTitle:@"Delete Complete"
-                                                                              message:resultMessage
-                                                                       preferredStyle:UIAlertControllerStyleAlert];
-            [resultAlert addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil]];
-            [self presentViewController:resultAlert animated:YES completion:nil];
+    [[DaemonApiManager sharedManager] executeCommand:@"deleteInactiveProfiles" parameters:@{} completion:^(id result,NSError *error) {
+        dispatch_async(dispatch_get_main_queue(),^{
+            [[LoadingView sharedInstance] hide]; [self loadProfilesFromDisk];
+            UIAlertController *alert=[UIAlertController alertControllerWithTitle:error?@"删除失败":@"完成" message:error.localizedDescription ?: @"已删除非当前档案，档案 0 已保留。" preferredStyle:UIAlertControllerStyleAlert];
+            [alert addAction:[UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:nil]];
+            [self presentViewController:alert animated:YES completion:nil];
         });
-    });
+    }];
 }
-
-
-#pragma mark - UIDocumentInteractionControllerDelegate
 
 - (UIViewController *)documentInteractionControllerViewControllerForPreview:(UIDocumentInteractionController *)controller {
     return self;
@@ -1725,4 +1702,4 @@ static void darwinNotificationCallback(
                                        CFSTR("com.hydra.projectx.profileChanged"),
                                        NULL);
 }
-@end 
+@end

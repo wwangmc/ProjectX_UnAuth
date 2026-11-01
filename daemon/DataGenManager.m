@@ -5,10 +5,18 @@
 #import <arpa/inet.h>
 #import "DBManager.h"
 #import "SettingManager.h"
+#import "PXConfiguration.h"
+#import <sys/utsname.h>
+#import <UIKit/UIKit.h>
+
+static NSString *PXSQLString(NSString *value) { return [NSString stringWithFormat:@"'%@'",[value stringByReplacingOccurrencesOfString:@"'" withString:@"''"]]; }
+static NSString *PXSQLList(NSArray *values) { NSMutableArray *parts=[NSMutableArray array]; for (NSString *v in values) [parts addObject:PXSQLString(v)]; return [parts componentsJoinedByString:@","]; }
 
 @interface DataGenManager()
 @property (nonatomic, strong) NSError *error;
 @property (nonatomic, strong) NSMutableArray <DeviceModel *> *deviceModels;
+@property (nonatomic, copy) NSString *requestedVersion;
+@property (nonatomic, copy) NSString *requestedModel;
     
 @end
 @implementation DataGenManager
@@ -34,7 +42,19 @@
     phoneInfo.serialNumber = [self generateSerialNumber];
     phoneInfo.IMEI = [self generateIMEI];
     phoneInfo.MEID = [self generateMEID];
-    [self generateIOSVersion:phoneInfo];
+    if (![self generateIOSVersion:phoneInfo]) return nil;
+    SettingManager *settings=[SettingManager sharedManager];
+    [settings loadFromPrefs];
+    NSMutableDictionary *runtime=[settings.options[@"runtimeTemplate"] mutableCopy] ?: [NSMutableDictionary dictionary];
+    for (NSString *key in @[@"maskEnvironment",@"maskProxy",@"sdkCompatibility",@"trackingOverride",@"hideSimulatedLocation"]) if (!runtime[key]) runtime[key]=@NO;
+    if (!runtime[@"openUDID"]) {
+        uint8_t bytes[20];
+        if (SecRandomCopyBytes(kSecRandomDefault,sizeof(bytes),bytes)!=errSecSuccess) return nil;
+        NSMutableString *value=[NSMutableString string];
+        for (NSUInteger i=0;i<sizeof(bytes);i++) [value appendFormat:@"%02x",bytes[i]];
+        runtime[@"openUDID"]=value;
+    }
+    phoneInfo.runtime=runtime;
 
     phoneInfo.systemBootUUID = [[[NSUUID UUID] UUIDString] lowercaseString];
     phoneInfo.dyldCacheUUID = [[[NSUUID UUID] UUIDString] lowercaseString];
@@ -55,8 +75,16 @@
     phoneInfo.upTimeInfo = [self generateUpTimeInfo];
 
     phoneInfo.networkInfo = [self generateNetworkInfo];
+    if (!phoneInfo.networkInfo || !PXValidatePhoneDictionary(phoneInfo.toDictionary,NULL)) return nil;
 
     return phoneInfo;
+}
+- (PhoneInfo *)generatePhoneInfoWithVersion:(NSString *)version model:(NSString *)model {
+    @synchronized (self) {
+        self.requestedVersion=version; self.requestedModel=model;
+        @try { return [self generatePhoneInfo]; }
+        @finally { self.requestedVersion=nil; self.requestedModel=nil; }
+    }
 }
 
 
@@ -676,11 +704,11 @@
     SettingManager * manager = [SettingManager sharedManager];
     [manager loadFromPrefs];
     NSString * carrierCountryCode = manager.carrierCountryCode;
-    NSString *sql = [NSString stringWithFormat:
-        @"SELECT * FROM operator where code = '%@' ORDER BY RANDOM() limit 1"
-    ,carrierCountryCode];
+    NSArray *carriers=manager.options[@"carriers"];
+    NSString *sql=carriers.count?[NSString stringWithFormat:@"SELECT * FROM operator WHERE name IN (%@) ORDER BY RANDOM() LIMIT 1",PXSQLList(carriers)]:[NSString stringWithFormat:@"SELECT * FROM operator WHERE code = %@ ORDER BY RANDOM() LIMIT 1",PXSQLString(carrierCountryCode ?: @"US")];
     NSLog(@"[DEBUG] query sql: %@",sql);
     NSDictionary * carrier = [[DBManager sharedManager] queryOne:sql];
+    if (!carrier) return nil;
 
     NetworkInfo *networkInfo = [[NetworkInfo alloc] init];
     networkInfo.carrierName = carrier[@"name"];
@@ -689,13 +717,10 @@
     networkInfo.countryCode  = carrier[@"code"];
     networkInfo.localIPAddress = [self generateSpoofedLocalIPAddressFromCurrent];
     networkInfo.localIPv6Address = [self generateSpoofedLocalIPv6AddressFromCurrent];
-    // 获取最小值和最大值
-    NetworkConnectionType minType = NetworkConnectionTypeWiFi;    // 1
-    NetworkConnectionType maxType = NetworkConnectionTypeCellular;    // 2
-
-    // 生成随机数（包含 min 和 max）
-    NetworkConnectionType randomType = arc4random_uniform(maxType - minType + 1) + minType;
-    networkInfo.connectionType = randomType;
+    NSInteger wifi=manager.options[@"wifiPercent"]?[manager.options[@"wifiPercent"] integerValue]:50;
+    NSInteger fiveG=manager.options[@"fiveGPercent"]?[manager.options[@"fiveGPercent"] integerValue]:50;
+    networkInfo.connectionType=arc4random_uniform(100)<wifi?NetworkConnectionTypeWiFi:NetworkConnectionTypeCellular;
+    networkInfo.radioAccessTechnology=arc4random_uniform(100)<fiveG?@"CTRadioAccessTechnologyNR":@"CTRadioAccessTechnologyLTE";
     return networkInfo;
 }
 - (NSString *)getCurrentLocalIPAddress {
@@ -885,12 +910,12 @@ NSString *NormalizeVersion(NSString *version)
     [manager loadFromPrefs];
     NSString * minVersion = manager.minVersion;
     NSString * maxVersion = manager.maxVersion;
+    if (self.requestedVersion.length) { minVersion=@""; maxVersion=@""; }
     
     NSMutableString *queryVersionSql =
         [NSMutableString stringWithString:@"SELECT * FROM KMOS"];
 
     NSMutableArray *conditions = [NSMutableArray array];
-    NSMutableArray *params = [NSMutableArray array];
 
     if (minVersion.length > 0) {
         [conditions addObject:[NSString stringWithFormat:@"sortVersion >= '%@'",NormalizeVersion(minVersion)]];
@@ -904,11 +929,34 @@ NSString *NormalizeVersion(NSString *version)
         [queryVersionSql appendFormat:@" WHERE %@", [conditions componentsJoinedByString:@" AND "]];
     }
 
-    [queryVersionSql appendString:@" ORDER BY RANDOM() LIMIT 1"];
-
-    NSLog(@"[DEBUG] query verion %@",queryVersionSql);
-    // 先随机一个版本号 再根据版本号找可选的设备 TODO 根据sortVersion筛选
-    NSDictionary * versionInfo = [[DBManager sharedManager] queryOne:queryVersionSql];
+    NSArray *versions=self.requestedVersion.length?@[self.requestedVersion]:manager.options[@"versions"];
+    if (versions.count) [queryVersionSql appendFormat:@"%@version IN (%@)",conditions.count?@" AND ":@" WHERE ",PXSQLList(versions)];
+    BOOL local=[manager.options[@"useLocalModelOS"] boolValue] && !self.requestedVersion.length && !self.requestedModel.length;
+    struct utsname host; uname(&host);
+    NSString *localModel=[NSString stringWithUTF8String:host.machine];
+    if (local) [queryVersionSql appendFormat:@"%@version = %@",(conditions.count||versions.count)?@" AND ":@" WHERE ",PXSQLString(UIDevice.currentDevice.systemVersion)];
+    NSArray *versionRows=[[DBManager sharedManager] query:queryVersionSql];
+    NSDictionary *weights=self.requestedVersion.length?nil:manager.options[@"versionWeights"];
+    NSMutableArray *eligible=[NSMutableArray array];
+    NSMutableDictionary *deviceRows=[NSMutableDictionary dictionary];
+    NSArray *models=self.requestedModel.length?@[self.requestedModel]:manager.options[@"models"];
+    for (NSDictionary *candidate in versionRows) {
+        NSString *sort=PXSQLString(candidate[@"sortVersion"] ?: @"");
+        NSMutableString *query=[NSMutableString stringWithFormat:@"SELECT d.*, c.count, c.mode, c.cpuArchitecture FROM KMDevices d LEFT JOIN CPU c ON d.CPU = c.name WHERE d.defaultOSV <= %@ AND %@ <= d.maxOSV AND c.count > 0 AND d.RAM > 0 AND d.sc_pixel_ratio > 0 AND d.storage IS NOT NULL",sort,sort];
+        if (local) [query appendFormat:@" AND d.identifier = %@",PXSQLString(localModel)];
+        else if (models.count) [query appendFormat:@" AND d.identifier IN (%@)",PXSQLList(models)];
+        if ([manager.options[@"requireRealRAM"] boolValue]) [query appendFormat:@" AND EXISTS (SELECT 1 FROM KMDevSpecial s WHERE s.mod = d.identifier AND s.osv = %@ AND s.ram > 0)",PXSQLString(candidate[@"version"])];
+        NSArray *devices=[[DBManager sharedManager] query:query];
+        double weight=weights.count?[weights[candidate[@"version"]] doubleValue]:1;
+        if (devices.count && weight>0) { [eligible addObject:candidate]; deviceRows[candidate[@"version"]]=devices; }
+    }
+    if (!eligible.count) return nil;
+    double total=0; for (NSDictionary *v in eligible) total+=weights.count?[weights[v[@"version"]] doubleValue]:1;
+    double draw=((double)arc4random()/((double)UINT32_MAX+1))*total;
+    NSDictionary *versionInfo=eligible.lastObject;
+    for (NSDictionary *v in eligible) { draw-=weights.count?[weights[v[@"version"]] doubleValue]:1; if (draw<0) { versionInfo=v; break; } }
+    NSArray *candidates=deviceRows[versionInfo[@"version"]];
+    NSDictionary *device=candidates[arc4random_uniform((uint32_t)candidates.count)];
     // @"kernel_version": @"Darwin Kernel Version ${KMOS.kernelversion}: ${KMOS.kernelversiontime}/RELEASE_ARM64_${cpu.mode}"
     
     IosVersion * iosVersion = [[IosVersion alloc]init];
@@ -916,12 +964,6 @@ NSString *NormalizeVersion(NSString *version)
     iosVersion.version = versionInfo[@"version"];
     iosVersion.build = versionInfo[@"OSBuild"];
 
-
-    NSString *sql = [NSString stringWithFormat:
-        @"SELECT * FROM KMDevices d left join CPU c on d.CPU = c.name WHERE defaultOSV <= '%@' AND '%@' <= maxOSV ORDER BY RANDOM() limit 1"
-    ,versionInfo[@"sortVersion"],versionInfo[@"sortVersion"]];
-
-    NSDictionary * device = [[DBManager sharedManager] queryOne:sql];
 
     iosVersion.kernelVersion = [NSString stringWithFormat:@"Darwin Kernel Version %@: %@/RELEASE_ARM64_%@",versionInfo[@"kernelversion"],versionInfo[@"kernelversiontime"],device[@"mode"]];
     iosVersion.darwin = versionInfo[@"kernelversion"];
@@ -937,7 +979,9 @@ NSString *NormalizeVersion(NSString *version)
     deviceModel.cpuArchitecture = device[@"cpuArchitecture"];
     deviceModel.hwModel = device[@"internal_name"];
     // Additional specs from addSpecsForDevice
-    deviceModel.deviceMemory = device[@"RAM"] ;
+    NSDictionary *special=[[DBManager sharedManager] queryOne:[NSString stringWithFormat:@"SELECT * FROM KMDevSpecial WHERE mod = %@ AND osv = %@ AND ram > 0 ORDER BY RANDOM() LIMIT 1",PXSQLString(device[@"identifier"]),PXSQLString(versionInfo[@"version"])]];
+    deviceModel.deviceMemory = device[@"RAM"];
+    deviceModel.physicalMemoryBytes = [special[@"ram"] longLongValue]>0?special[@"ram"]:@([device[@"RAM"] doubleValue]*1024*1024*1024);
     deviceModel.cpuCoreCount = device[@"count"];
     deviceModel.gpuFamily = [NSString stringWithFormat:@"Apple %@ GPU",device[@"CPU"]];
     WebGLInfo *webGL = [[WebGLInfo alloc] init];
@@ -967,6 +1011,7 @@ NSString *NormalizeVersion(NSString *version)
     
     // 4. 获取随机值并转换为整数（如果需要数字类型）
     NSString *capacity = components[randomIndex];
+    if ([special[@"TotalStorage"] isKindOfClass:NSNumber.class] && [special[@"TotalStorage"] doubleValue]>0) capacity=[NSString stringWithFormat:@"%.3f",[special[@"TotalStorage"] doubleValue]/(1024*1024*1024.0)];
     double totalGB = [capacity doubleValue];
     double freePercent;
     
@@ -994,7 +1039,7 @@ NSString *NormalizeVersion(NSString *version)
     phoneInfo.storageInfo = storageInfo;
     phoneInfo.deviceModel = deviceModel;
     phoneInfo.iosVersion = iosVersion;
-    
+    return iosVersion;
 }
 
 

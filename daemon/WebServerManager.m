@@ -11,6 +11,7 @@
 #import "ProfileManager.h"
 #import "DBManager.h"
 #import "RequestValidation.h"
+#import "PXCommandService.h"
 
 GCDWebServerDataResponse* dataResponse(NSDictionary *jsonData)
 {
@@ -51,10 +52,10 @@ GCDWebServerErrorResponse* jsonFormatErrorResponse()
         webServer = [[GCDWebServer alloc] init];
         [WebServerManager initHandle:webServer];
         [WebServerManager initDebugHandle:webServer];
-        [webServer startWithPort:8888 bonjourName:nil];
+        [webServer startWithOptions:@{GCDWebServerOption_Port:@8888,GCDWebServerOption_BindToLocalhost:@YES} error:NULL];
     });
 }
-+(void) initDebugHandle:(GCDWebsocketServer *)webServer
++(void) initDebugHandle:(GCDWebServer *)webServer
 {
     // [webServer addHandlerForMethod:@"GET"
     //                           path:@"/randomInfo"
@@ -65,14 +66,29 @@ GCDWebServerErrorResponse* jsonFormatErrorResponse()
     //     return dataResponse([iosVersion toDictionary]);
     // }];
 }
-+(void) initHandle:(GCDWebsocketServer *)webServer
++(void) initHandle:(GCDWebServer *)webServer
 {
+    [webServer addHandlerForMethod:@"POST" path:EXECUTE_COMMAND requestClass:[GCDWebServerDataRequest class]
+        processBlock:^GCDWebServerResponse *(GCDWebServerDataRequest *request) {
+            NSError *error=nil;
+            NSDictionary *body=PXDictionaryFromJSONData(request.data,&error);
+            if (!body || ![body[@"command"] isKindOfClass:NSString.class] ||
+                (body[@"parameters"] && ![body[@"parameters"] isKindOfClass:NSDictionary.class])) return jsonFormatErrorResponse();
+            id result=[[PXCommandService sharedService] perform:body[@"command"] parameters:body[@"parameters"] ?: @{} error:&error];
+            if (!result) {
+                GCDWebServerDataResponse *failure=dataResponse(@{@"status":@"error",@"message":error.localizedDescription ?: @"操作失败"});
+                failure.statusCode=400; return failure;
+            }
+            return dataResponse(@{@"status":@"success",@"data":result});
+        }];
     [webServer addHandlerForMethod:@"GET"
                               path:NEW_PHONE
                       requestClass:[GCDWebServerDataRequest class] // 必须是 DataRequest 才能读取 Body
                       processBlock:^GCDWebServerResponse *(GCDWebServerDataRequest *request) {
 
-        [[ActionManager sharedManager] newPhone];
+        NSError *error=nil;
+        if (![[PXCommandService sharedService] perform:@"newPhone" parameters:@{} error:&error])
+            return [GCDWebServerErrorResponse responseWithClientError:400 message:@"%@", error.localizedDescription ?: @"新机失败"];
         NSMutableSet *scopeSet = [[AppScopeManager sharedManager] loadPreferences];
         return dataResponse(@{
             @"status": @"success",
@@ -126,7 +142,7 @@ GCDWebServerErrorResponse* jsonFormatErrorResponse()
             return jsonFormatErrorResponse();
         }
 
-        BOOL success = [PhoneInfo saveDictionaryToPrefs:dict];
+        BOOL success = [[PXCommandService sharedService] perform:@"setPhoneInfo" parameters:dict error:&error]!=nil;
         if(success){
             return staticSuccessResponse();
         }else{
@@ -146,7 +162,8 @@ GCDWebServerErrorResponse* jsonFormatErrorResponse()
             return jsonFormatErrorResponse();
         }
         if (![dict[@"id"] isKindOfClass:[NSString class]] || ![dict[@"id"] length]) return missingParamResponse();
-        [[ActionManager sharedManager] removeBackup:dict[@"id"]];
+        if (![[PXCommandService sharedService] perform:@"deleteProfiles" parameters:@{@"ids":@[dict[@"id"]]} error:&error])
+            return [GCDWebServerErrorResponse responseWithClientError:400 message:@"%@", error.localizedDescription ?: @"删除失败"];
         return staticSuccessResponse();
     }];
     [webServer addHandlerForMethod:@"POST"
@@ -160,7 +177,7 @@ GCDWebServerErrorResponse* jsonFormatErrorResponse()
         }
         if (![dict[@"id"] isKindOfClass:[NSString class]] || ![dict[@"id"] length]) return missingParamResponse();
         if (![dict[@"name"] isKindOfClass:[NSString class]] || ![dict[@"name"] length]) return missingParamResponse();
-        if (![[ProfileManager sharedManager] renameProfile:dict[@"id"] to:dict[@"name"]]) {
+        if (![[PXCommandService sharedService] perform:@"renameProfile" parameters:dict error:&error]) {
             return [GCDWebServerErrorResponse responseWithClientError:409 message:@"Profile could not be saved"];
         }
         return staticSuccessResponse();
@@ -176,7 +193,8 @@ GCDWebServerErrorResponse* jsonFormatErrorResponse()
             return jsonFormatErrorResponse();
         }
         if (![dict[@"id"] isKindOfClass:[NSString class]] || ![dict[@"id"] length]) return missingParamResponse();
-        [[ActionManager sharedManager] switchBackup:dict[@"id"]];
+        if (![[PXCommandService sharedService] perform:@"switchProfile" parameters:dict error:&error])
+            return [GCDWebServerErrorResponse responseWithClientError:400 message:@"%@", error.localizedDescription ?: @"切换失败"];
         return staticSuccessResponse();
     }];
 

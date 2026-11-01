@@ -4,6 +4,8 @@
 @class StorageInfo,NetworkInfo,BatteryInfo,WifiInfo,IosVersion,UpTimeInfo,DeviceModel,WebGLInfo;  // 前向声明，解决循环依赖
 
 @interface PhoneInfo : NSObject
+// Optional, validated runtime overrides. Missing keys preserve original APIs.
+@property (nonatomic, copy) NSDictionary *runtime;
 
 // 设备标识信息
 @property (nonatomic, copy) NSString *idfa;
@@ -116,6 +118,7 @@
 @property (nonatomic, copy) NSString *hwModel;
 @property (nonatomic, copy) NSString *gpuFamily;
 @property (nonatomic, copy) NSNumber *deviceMemory;
+@property (nonatomic, copy) NSNumber *physicalMemoryBytes;
 @property (nonatomic, copy) NSNumber *cpuCoreCount;
 @property (nonatomic, strong) WebGLInfo *webGLInfo;
 - (NSString *) showInfo;
@@ -143,6 +146,7 @@ typedef NS_ENUM(NSInteger, NetworkConnectionType) {
     NetworkConnectionTypeNone = 3
 };
 @interface NetworkInfo : NSObject
+@property (nonatomic, copy) NSString *radioAccessTechnology;
 @property (nonatomic, copy) NSString *carrierName;
 @property (nonatomic, copy) NSString *mcc;
 @property (nonatomic, copy) NSString *mnc;

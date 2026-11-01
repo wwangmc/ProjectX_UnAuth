@@ -1,0 +1,255 @@
+﻿机制,目标,方法,注册地址,替换函数,ProjectX状态,ProjectX证据,限制与备注
+MSHookMessageEx,CLASS:DeviceFingerPrint.DeviceInfo,hasVpn,0x115fe0,0x116f6c,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响；主构造器，有进程排除与 openStatus/appids 检查
+MSHookMessageEx,CLASS:DeviceFingerPrint.DeviceInfo,isJailBreak,0x116000,0x116f90,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响；主构造器，有进程排除与 openStatus/appids 检查
+MSHookMessageEx,CLASS:DeviceFingerPrint.DeviceInfo,proxyStatus,0x116020,0x116fb4,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响；主构造器，有进程排除与 openStatus/appids 检查
+MSHookMessageEx,CLASS:ASIdentifierManager,advertisingIdentifier,0x11604c,0x116fd8,已有同名 Hook；行为/生效未等价验证,/Users/ww/Desktop/IOSManager/ProjectX_UnAuth/hooks/Tweak.x:95,存在注册调用；运行时受目标类/系统版本/配置影响；主构造器，有进程排除与 openStatus/appids 检查
+MSHookMessageEx,CLASS:ASIdentifierManager,isAdvertisingTrackingEnabled,0x11606c,0x1170a0,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响；主构造器，有进程排除与 openStatus/appids 检查
+MSHookMessageEx,META:ATTrackingManager,requestTrackingAuthorizationWithCompletionHandler:,0x116098,0x11714c,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响；主构造器，有进程排除与 openStatus/appids 检查
+MSHookMessageEx,META:OpenUDID,value,0x1160c4,0x1171a4,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响；主构造器，有进程排除与 openStatus/appids 检查
+MSHookMessageEx,CLASS:CLLocationManager,setDelegate:,0x1160ec,0x11721c,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响；主构造器，有进程排除与 openStatus/appids 检查
+MSHookMessageEx,CLASS:CLPlacemark,areasOfInterest,0x116118,0x117310,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响；主构造器，有进程排除与 openStatus/appids 检查
+MSHookMessageEx,CLASS:CLPlacemark,postalAddress,0x116138,0x117374,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响；主构造器，有进程排除与 openStatus/appids 检查
+MSHookMessageEx,CLASS:CLPlacemark,region,0x116158,0x1173d8,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响；主构造器，有进程排除与 openStatus/appids 检查
+MSHookMessageEx,CLASS:CLPlacemark,location,0x116178,0x11743c,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响；主构造器，有进程排除与 openStatus/appids 检查
+MSHookMessageEx,CLASS:CLPlacemark,name,0x11619c,0x117604,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响；主构造器，有进程排除与 openStatus/appids 检查
+MSHookMessageEx,CLASS:CLPlacemark,thoroughfare,0x1161bc,0x1176bc,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响；主构造器，有进程排除与 openStatus/appids 检查
+MSHookMessageEx,CLASS:CLPlacemark,subThoroughfare,0x1161dc,0x117774,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响；主构造器，有进程排除与 openStatus/appids 检查
+MSHookMessageEx,CLASS:CLPlacemark,locality,0x1161fc,0x11782c,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响；主构造器，有进程排除与 openStatus/appids 检查
+MSHookMessageEx,CLASS:CLPlacemark,subLocality,0x11621c,0x1178e4,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响；主构造器，有进程排除与 openStatus/appids 检查
+MSHookMessageEx,CLASS:CLPlacemark,country,0x11623c,0x11799c,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响；主构造器，有进程排除与 openStatus/appids 检查
+MSHookMessageEx,CLASS:CLPlacemark,ISOcountryCode,0x11625c,0x117a54,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响；主构造器，有进程排除与 openStatus/appids 检查
+MSHookMessageEx,CLASS:CLGeocoder,reverseGeocodeLocation:completionHandler:,0x116284,0x117af0,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响；主构造器，有进程排除与 openStatus/appids 检查
+MSHookMessageEx,CLASS:CLLocationSourceInformation,isSimulatedBySoftware,0x1162b0,0x117c1c,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响；主构造器，有进程排除与 openStatus/appids 检查
+MSHookMessageEx,CLASS:CLLocationSourceInformation,isProducedByAccessory,0x1162d0,0x117c24,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响；主构造器，有进程排除与 openStatus/appids 检查
+MSHookMessageEx,CLASS:SBTelephonyManager,SIMStatus,0x1162f8,0x117c2c,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响；主构造器，有进程排除与 openStatus/appids 检查
+MSHookMessageEx,CLASS:CTTelephonyNetworkInfo,currentRadioAccessTechnology,0x116324,0x117c38,已有同名 Hook；行为/生效未等价验证,/Users/ww/Desktop/IOSManager/ProjectX_UnAuth/hooks/NetworkConnectionTypeHooks.x:344,存在注册调用；运行时受目标类/系统版本/配置影响；主构造器，有进程排除与 openStatus/appids 检查
+MSHookMessageEx,CLASS:CTTelephonyNetworkInfo,serviceCurrentRadioAccessTechnology,0x116344,0x117cec,已有同名 Hook；行为/生效未等价验证,/Users/ww/Desktop/IOSManager/ProjectX_UnAuth/hooks/NetworkConnectionTypeHooks.x:352,存在注册调用；运行时受目标类/系统版本/配置影响；主构造器，有进程排除与 openStatus/appids 检查
+MSHookMessageEx,CLASS:CTTelephonyNetworkInfo,serviceSubscriberCellularProviders,0x116364,0x117dac,已有同名 Hook；行为/生效未等价验证,/Users/ww/Desktop/IOSManager/ProjectX_UnAuth/hooks/NetworkConnectionTypeHooks.x:328,存在注册调用；运行时受目标类/系统版本/配置影响；主构造器，有进程排除与 openStatus/appids 检查
+MSHookMessageEx,CLASS:NEHotspotNetwork,SSID,0x116390,0x117efc,已有同名 Hook；行为/生效未等价验证,/Users/ww/Desktop/IOSManager/ProjectX_UnAuth/hooks/WiFiHook.x:325,存在注册调用；运行时受目标类/系统版本/配置影响；主构造器，有进程排除与 openStatus/appids 检查
+MSHookMessageEx,CLASS:NEHotspotNetwork,BSSID,0x1163b0,0x117f74,已有同名 Hook；行为/生效未等价验证,/Users/ww/Desktop/IOSManager/ProjectX_UnAuth/hooks/WiFiHook.x:334,存在注册调用；运行时受目标类/系统版本/配置影响；主构造器，有进程排除与 openStatus/appids 检查
+MSHookMessageEx,CLASS:CTCarrier,carrierName,0x1163dc,0x117fec,已有同名 Hook；行为/生效未等价验证,/Users/ww/Desktop/IOSManager/ProjectX_UnAuth/hooks/NetworkConnectionTypeHooks.x:363,存在注册调用；运行时受目标类/系统版本/配置影响；主构造器，有进程排除与 openStatus/appids 检查
+MSHookMessageEx,CLASS:CTCarrier,mobileCountryCode,0x1163fc,0x118088,已有同名 Hook；行为/生效未等价验证,/Users/ww/Desktop/IOSManager/ProjectX_UnAuth/hooks/NetworkConnectionTypeHooks.x:371,存在注册调用；运行时受目标类/系统版本/配置影响；主构造器，有进程排除与 openStatus/appids 检查
+MSHookMessageEx,CLASS:CTCarrier,mobileNetworkCode,0x11641c,0x118100,已有同名 Hook；行为/生效未等价验证,/Users/ww/Desktop/IOSManager/ProjectX_UnAuth/hooks/NetworkConnectionTypeHooks.x:378,存在注册调用；运行时受目标类/系统版本/配置影响；主构造器，有进程排除与 openStatus/appids 检查
+MSHookMessageEx,CLASS:CTCarrier,isoCountryCode,0x11643c,0x118178,已有同名 Hook；行为/生效未等价验证,/Users/ww/Desktop/IOSManager/ProjectX_UnAuth/hooks/NetworkConnectionTypeHooks.x:385,存在注册调用；运行时受目标类/系统版本/配置影响；主构造器，有进程排除与 openStatus/appids 检查
+MSHookMessageEx,CLASS:NSUserDefaults,stringForKey:,0x116464,0x1181f0,已有同名 Hook；行为/生效未等价验证,/Users/ww/Desktop/IOSManager/ProjectX_UnAuth/hooks/UserDefaultsHooks.x:126,存在注册调用；运行时受目标类/系统版本/配置影响；主构造器，有进程排除与 openStatus/appids 检查
+MSHookMessageEx,CLASS:NSFileManager,attributesOfFileSystemForPath:error:,0x116490,0x118334,已有同名 Hook；行为/生效未等价验证,/Users/ww/Desktop/IOSManager/ProjectX_UnAuth/hooks/StorageHooks.x:481,存在注册调用；运行时受目标类/系统版本/配置影响；主构造器，有进程排除与 openStatus/appids 检查
+MSHookMessageEx,CLASS:NSFileManager,attributesOfItemAtPath:error:,0x1164b0,0x1184ac,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响；主构造器，有进程排除与 openStatus/appids 检查
+MSHookMessageEx,CLASS:NSFileManager,subpathsAtPath:,0x1164d0,0x1185a8,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响；主构造器，有进程排除与 openStatus/appids 检查
+MSHookMessageEx,CLASS:NSFileManager,subpathsOfDirectoryAtPath:error:,0x1164f0,0x1186a0,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响；主构造器，有进程排除与 openStatus/appids 检查
+MSHookMessageEx,CLASS:NSFileManager,isReadableFileAtPath:,0x116510,0x1187a0,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响；主构造器，有进程排除与 openStatus/appids 检查
+MSHookMessageEx,CLASS:SensesDevice,getDeviceIdfv,0x116548,0x118898,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响；主构造器，有进程排除与 openStatus/appids 检查
+MSHookMessageEx,META:SensesDevice,sharedInstance,0x116568,0x1188d4,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响；主构造器，有进程排除与 openStatus/appids 检查
+MSHookMessageEx,CLASS:LSApplicationProxy,deviceIdentifierForVendor,0x116590,0x118910,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响；主构造器，有进程排除与 openStatus/appids 检查
+MSHookMessageEx,CLASS:UIDevice,identifierForVendor,0x1165cc,0x1189a8,已有同名 Hook；行为/生效未等价验证,/Users/ww/Desktop/IOSManager/ProjectX_UnAuth/hooks/Tweak.x:112,存在注册调用；运行时受目标类/系统版本/配置影响；主构造器，有进程排除与 openStatus/appids 检查
+MSHookMessageEx,CLASS:UIDevice,name,0x1165e8,0x118b08,已有同名 Hook；行为/生效未等价验证,/Users/ww/Desktop/IOSManager/ProjectX_UnAuth/hooks/DeviceModelHooks.x:466; /Users/ww/Desktop/IOSManager/ProjectX_UnAuth/hooks/Tweak.x:130,存在注册调用；运行时受目标类/系统版本/配置影响；主构造器，有进程排除与 openStatus/appids 检查
+MSHookMessageEx,CLASS:UIDevice,model,0x116608,0x118b80,已有同名 Hook；行为/生效未等价验证,/Users/ww/Desktop/IOSManager/ProjectX_UnAuth/hooks/DeviceModelHooks.x:442,存在注册调用；运行时受目标类/系统版本/配置影响；主构造器，有进程排除与 openStatus/appids 检查
+MSHookMessageEx,CLASS:UIDevice,localizedModel,0x116628,0x118c58,已有同名 Hook；行为/生效未等价验证,/Users/ww/Desktop/IOSManager/ProjectX_UnAuth/hooks/DeviceModelHooks.x:484,存在注册调用；运行时受目标类/系统版本/配置影响；主构造器，有进程排除与 openStatus/appids 检查
+MSHookMessageEx,CLASS:UIDevice,systemVersion,0x116648,0x118d30,已有同名 Hook；行为/生效未等价验证,/Users/ww/Desktop/IOSManager/ProjectX_UnAuth/hooks/IOSVersionHooks.x:124,存在注册调用；运行时受目标类/系统版本/配置影响；主构造器，有进程排除与 openStatus/appids 检查
+MSHookMessageEx,CLASS:UIDevice,batteryState,0x116668,0x118ddc,已有同名 Hook；行为/生效未等价验证,/Users/ww/Desktop/IOSManager/ProjectX_UnAuth/hooks/BatteryHooks.x:31,存在注册调用；运行时受目标类/系统版本/配置影响；主构造器，有进程排除与 openStatus/appids 检查
+MSHookMessageEx,CLASS:UIDevice,batteryLevel,0x116688,0x118de4,已有同名 Hook；行为/生效未等价验证,/Users/ww/Desktop/IOSManager/ProjectX_UnAuth/hooks/BatteryHooks.x:30,存在注册调用；运行时受目标类/系统版本/配置影响；主构造器，有进程排除与 openStatus/appids 检查
+MSHookMessageEx,CLASS:UIDevice,isJailbroken,0x1166ac,0x118e5c,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响；主构造器，有进程排除与 openStatus/appids 检查
+MSHookMessageEx,META:UIDevice,CPS_isJailBreak,0x1166cc,0x118e64,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响；主构造器，有进程排除与 openStatus/appids 检查
+MSHookMessageEx,META:UIDevice,SHPSEC_riskInfoCryptInner:andLength:andGen:andKey:andThin:andAppId:andRiskToken:,0x1166ec,0x118e6c,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响；主构造器，有进程排除与 openStatus/appids 检查
+MSHookMessageEx,CLASS:UIDevice,stee_isJailbreak_1,0x11670c,0x118ed8,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响；主构造器，有进程排除与 openStatus/appids 检查
+MSHookMessageEx,CLASS:UIDevice,stee_isJailbreak_2,0x11672c,0x118ee0,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响；主构造器，有进程排除与 openStatus/appids 检查
+MSHookMessageEx,CLASS:UIDevice,stee_isJailbreak_3,0x11674c,0x118ee8,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响；主构造器，有进程排除与 openStatus/appids 检查
+MSHookMessageEx,CLASS:UIDevice,stee_isJailbreak_4,0x11676c,0x118ef0,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响；主构造器，有进程排除与 openStatus/appids 检查
+MSHookMessageEx,CLASS:UIDevice,stee_isJailbreak_5,0x11678c,0x118ef8,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响；主构造器，有进程排除与 openStatus/appids 检查
+MSHookMessageEx,CLASS:UIDevice,stee_isJailbreak_6,0x1167ac,0x118f00,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响；主构造器，有进程排除与 openStatus/appids 检查
+MSHookMessageEx,CLASS:UIDevice,stee_isJailbreak_7,0x1167cc,0x118f08,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响；主构造器，有进程排除与 openStatus/appids 检查
+MSHookMessageEx,META:UIDevice,btd_isJailBroken,0x1167ec,0x118f28,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响；主构造器，有进程排除与 openStatus/appids 检查
+MSHookMessageEx,CLASS:NSProcessInfo,operatingSystemVersion,0x116818,0x118f30,已有同名 Hook；行为/生效未等价验证,/Users/ww/Desktop/IOSManager/ProjectX_UnAuth/hooks/IOSVersionHooks.x:169,存在注册调用；运行时受目标类/系统版本/配置影响；主构造器，有进程排除与 openStatus/appids 检查
+MSHookMessageEx,CLASS:NSProcessInfo,operatingSystemVersionString,0x116838,0x11906c,已有同名 Hook；行为/生效未等价验证,/Users/ww/Desktop/IOSManager/ProjectX_UnAuth/hooks/IOSVersionHooks.x:222,存在注册调用；运行时受目标类/系统版本/配置影响；主构造器，有进程排除与 openStatus/appids 检查
+MSHookMessageEx,CLASS:NSProcessInfo,hostName,0x116858,0x11914c,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响；主构造器，有进程排除与 openStatus/appids 检查
+MSHookMessageEx,CLASS:NSProcessInfo,processorCount,0x116878,0x1191c4,已有同名 Hook；行为/生效未等价验证,/Users/ww/Desktop/IOSManager/ProjectX_UnAuth/hooks/DeviceSpecHooks.x:273,存在注册调用；运行时受目标类/系统版本/配置影响；主构造器，有进程排除与 openStatus/appids 检查
+MSHookMessageEx,CLASS:NSProcessInfo,systemUptime,0x116898,0x119278,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响；主构造器，有进程排除与 openStatus/appids 检查
+MSHookMessageEx,CLASS:NSProcessInfo,activeProcessorCount,0x1168b8,0x1192e8,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响；主构造器，有进程排除与 openStatus/appids 检查
+MSHookMessageEx,CLASS:NSProcessInfo,physicalMemory,0x1168d8,0x11939c,已有同名 Hook；行为/生效未等价验证,/Users/ww/Desktop/IOSManager/ProjectX_UnAuth/hooks/DeviceSpecHooks.x:199,存在注册调用；运行时受目标类/系统版本/配置影响；主构造器，有进程排除与 openStatus/appids 检查
+MSHookMessageEx,CLASS:AVAudioSession,outputVolume,0x116904,0x119484,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响；主构造器，有进程排除与 openStatus/appids 检查
+MSHookMessageEx,CLASS:AVAudioSession,getOutputVolume,0x116924,0x1194fc,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响；主构造器，有进程排除与 openStatus/appids 检查
+MSHookMessageEx,CLASS:__NSLocalTimeZoneI,name,0x11694c,0x119574,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响；主构造器，有进程排除与 openStatus/appids 检查
+MSHookMessageEx,CLASS:__NSLocalTimeZoneI,secondsFromGMT,0x116970,0x119610,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响；主构造器，有进程排除与 openStatus/appids 检查
+MSHookMessageEx,CLASS:__NSTimeZone,name,0x116998,0x119690,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响；主构造器，有进程排除与 openStatus/appids 检查
+MSHookMessageEx,CLASS:__NSTimeZone,secondsFromGMT,0x1169b4,0x119738,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响；主构造器，有进程排除与 openStatus/appids 检查
+MSHookMessageEx,CLASS:UIScreen,bounds,0x1169e0,0x1197b8,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响；主构造器，有进程排除与 openStatus/appids 检查
+MSHookMessageEx,CLASS:UIScreen,nativeBounds,0x116a00,0x1198cc,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响；主构造器，有进程排除与 openStatus/appids 检查
+MSHookMessageEx,CLASS:UIScreen,scale,0x116a20,0x119a00,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响；主构造器，有进程排除与 openStatus/appids 检查
+MSHookMessageEx,CLASS:UIScreen,nativeScale,0x116a40,0x119af8,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响；主构造器，有进程排除与 openStatus/appids 检查
+MSHookMessageEx,CLASS:UIWindow,safeAreaInsets,0x116a68,0x119bf0,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响；主构造器，有进程排除与 openStatus/appids 检查
+MSHookMessageEx,CLASS:UIScreenMode,size,0x116a90,0x119cf8,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响；主构造器，有进程排除与 openStatus/appids 检查
+MSHookMessageEx,CLASS:SpectrumReachability,isReachableViaWiFiNoVPN,0x116abc,0x119de0,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响；主构造器，有进程排除与 openStatus/appids 检查
+MSHookMessageEx,CLASS:SpectrumReachability,isConnectedViaVPN,0x116adc,0x119e00,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响；主构造器，有进程排除与 openStatus/appids 检查
+MSHookMessageEx,META:ABKLocationUtilities,isValidLocationAndAccurateEnough:,0x116b0c,0x119e20,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响；主构造器，有进程排除与 openStatus/appids 检查
+MSHookMessageEx,META:ABKLocationUtilities,locationIsValidWithLatitude:longitude:,0x116b2c,0x119e40,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响；主构造器，有进程排除与 openStatus/appids 检查
+MSHookMessageEx,CLASS:Talkable,checkUrlScheme,0x116b8c,0x119e9c,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响；主构造器，有进程排除与 openStatus/appids 检查
+MSHookMessageEx,CLASS:AFSDKiAdClient,appleAdsAttributionToken,0x116bb4,0x119ea0,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响；主构造器，有进程排除与 openStatus/appids 检查
+MSHookMessageEx,META:AFSDKDevice,identifierForVendor,0x116bdc,0x119ec0,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响；主构造器，有进程排除与 openStatus/appids 检查
+MSHookMessageEx,META:RLMRealm,realmWithConfiguration:queue:error:,0x116c08,0x119f68,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响；主构造器，有进程排除与 openStatus/appids 检查；含透传/日志类 Hook，不据此认定独立功能缺口
+MSHookMessageEx,CLASS:RLMArray,insertObject:atIndex:,0x116c30,0x119fd8,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响；主构造器，有进程排除与 openStatus/appids 检查；含透传/日志类 Hook，不据此认定独立功能缺口
+MSHookMessageEx,CLASS:MiHoYoDeviceInfo,isConnectedToProxy,0x116c58,0x11a000,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响；主构造器，有进程排除与 openStatus/appids 检查
+MSHookMessageEx,CLASS:GT3DataBase,mobileInfo,0x116c80,0x11a020,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响；主构造器，有进程排除与 openStatus/appids 检查
+MSHookMessageEx,META:GADevice,isJailbroken,0x116cac,0x11a0c4,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响；主构造器，有进程排除与 openStatus/appids 检查
+MSHookMessageEx,CLASS:GADevice,checkJailbroken,0x116ccc,0x11a0cc,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响；主构造器，有进程排除与 openStatus/appids 检查
+MSHookMessageEx,META:PAGDeviceHelper,bu_isJailBroken,0x116cf8,0x11a0d4,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响；主构造器，有进程排除与 openStatus/appids 检查
+MSHookMessageEx,META:YMM_YX_SSJailbreakCheck,jailbroken,0x116d24,0x11a0dc,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响；主构造器，有进程排除与 openStatus/appids 检查
+MSHookMessageEx,META:MRDeviceUtils,isJB,0x116d54,0x11a0e8,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响；主构造器，有进程排除与 openStatus/appids 检查
+MSHookMessageEx,META:MTRGDeviceUtils,isJB,0x116d7c,0x11a0f0,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响；主构造器，有进程排除与 openStatus/appids 检查
+MSHookMessageEx,CLASS:_UIConcretePasteboard,setString:,0x116da4,0x11a0f8,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响；主构造器，有进程排除与 openStatus/appids 检查；含透传/日志类 Hook，不据此认定独立功能缺口
+MSHookMessageEx,CLASS:DCDevice,isSupported,0x116dcc,0x11a10c,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响；主构造器，有进程排除与 openStatus/appids 检查
+MSHookFunction,_sysctl,,0x116df8,__Z10new_sysctlPijPvPmS0_m,已有相同 C 入口；行为/生效未等价验证,[hooks/DeviceModelHooks.x](/Users/ww/Desktop/IOSManager/ProjectX_UnAuth/hooks/DeviceModelHooks.x:627),存在注册调用；运行时受目标类/系统版本/配置影响；主构造器，有进程排除与 openStatus/appids 检查
+MSHookFunction,_host_info,,0x116e14,__Z13new_host_infojiPiPj,未找到相同 C 入口 Hook,当前根 Makefile 的 hooks/*.x,存在注册调用；运行时受目标类/系统版本/配置影响；主构造器，有进程排除与 openStatus/appids 检查
+MSHookFunction,_NXGetLocalArchInfo,,0x116e30,__Z22new_NXGetLocalArchInfov,已有相同 C 入口；行为/生效未等价验证,[hooks/DeviceSpecHooks.x](/Users/ww/Desktop/IOSManager/ProjectX_UnAuth/hooks/DeviceSpecHooks.x:1119),存在注册调用；运行时受目标类/系统版本/配置影响；主构造器，有进程排除与 openStatus/appids 检查
+MSHookFunction,_CNCopyCurrentNetworkInfo,,0x116e4c,__Z17new_CNCopyNetInfoPK10__CFString,已有相同 C 入口；行为/生效未等价验证,[hooks/NetworkConnectionTypeHooks.x](/Users/ww/Desktop/IOSManager/ProjectX_UnAuth/hooks/NetworkConnectionTypeHooks.x:665),存在注册调用；运行时受目标类/系统版本/配置影响；主构造器，有进程排除与 openStatus/appids 检查
+MSHookFunction,_uname,,0x116e68,__Z9new_unameP7utsname,已有相同 C 入口；行为/生效未等价验证,[hooks/DeviceModelHooks.x](/Users/ww/Desktop/IOSManager/ProjectX_UnAuth/hooks/DeviceModelHooks.x:611),存在注册调用；运行时受目标类/系统版本/配置影响；主构造器，有进程排除与 openStatus/appids 检查
+MSHookFunction,_sysctlbyname,,0x116e84,__Z16new_sysctlbynamePKcPvPmS1_m,已有相同 C 入口；行为/生效未等价验证,[hooks/DeviceModelHooks.x](/Users/ww/Desktop/IOSManager/ProjectX_UnAuth/hooks/DeviceModelHooks.x:618),存在注册调用；运行时受目标类/系统版本/配置影响；主构造器，有进程排除与 openStatus/appids 检查
+MSHookFunction,_nw_path_uses_interface_type,,0x116ea0,__Z31new_nw_path_uses_interface_typePU21objcproto10OS_nw_path8NSObject19nw_interface_type_t,未找到相同 C 入口 Hook,当前根 Makefile 的 hooks/*.x,存在注册调用；运行时受目标类/系统版本/配置影响；主构造器，有进程排除与 openStatus/appids 检查
+MSHookFunction,_nw_path_has_ipv4,,0x116ebc,__Z20new_nw_path_has_ipv4PU21objcproto10OS_nw_path8NSObject,未找到相同 C 入口 Hook,当前根 Makefile 的 hooks/*.x,存在注册调用；运行时受目标类/系统版本/配置影响；主构造器，有进程排除与 openStatus/appids 检查
+MSHookFunction,_nw_path_has_ipv6,,0x116ed8,__Z20new_nw_path_has_ipv6PU21objcproto10OS_nw_path8NSObject,未找到相同 C 入口 Hook,当前根 Makefile 的 hooks/*.x,存在注册调用；运行时受目标类/系统版本/配置影响；主构造器，有进程排除与 openStatus/appids 检查
+MSHookFunction,_nw_interface_get_type,,0x116ef4,__Z25new_nw_interface_get_typePU26objcproto15OS_nw_interface8NSObject,未找到相同 C 入口 Hook,当前根 Makefile 的 hooks/*.x,存在注册调用；运行时受目标类/系统版本/配置影响；主构造器，有进程排除与 openStatus/appids 检查
+MSHookFunction,_nw_interface_get_name,,0x116f10,__Z25new_nw_interface_get_namePU26objcproto15OS_nw_interface8NSObject,未找到相同 C 入口 Hook,当前根 Makefile 的 hooks/*.x,存在注册调用；运行时受目标类/系统版本/配置影响；主构造器，有进程排除与 openStatus/appids 检查
+MSHookFunction,_CFBundleGetValueForInfoDictionaryKey,,0x116f2c,__Z16new_CFBundDicKeyP10__CFBundlePK10__CFString,已有相同 C 入口；行为/生效未等价验证,[hooks/IOSVersionHooks.x](/Users/ww/Desktop/IOSManager/ProjectX_UnAuth/hooks/IOSVersionHooks.x:955),存在注册调用；运行时受目标类/系统版本/配置影响；主构造器，有进程排除与 openStatus/appids 检查
+MSHookMessageEx,<CLLocationManager delegate 的运行时类>,locationManager:didUpdateLocations:,0x1172e4,__Z21owner_locationManagerP11objc_objectP13objc_selectorP17CLLocationManagerP7NSArray,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响；目标类通过运行时值确定
+MSHookMessageEx,<MTLCreateSystemDefaultDevice 返回对象的运行时类>,name,0x11b904,__Z14new_mtlDevnamev,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响；目标类通过运行时值确定
+MSHookMessageEx,<MTLCreateSystemDefaultDevice 返回对象的运行时类>,recommendedMaxWorkingSetSize,0x11b924,__Z35new_MTLrecommendedMaxWorkingSetSizev,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响；目标类通过运行时值确定
+MSHookMessageEx,<MTLCreateSystemDefaultDevice 返回对象的运行时类>,supportsRaytracing,0x11b944,__Z25new_MTLsupportsRaytracingv,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响；目标类通过运行时值确定
+MSHookFunction,__dyld_get_image_name,,0x11bbbc,0x11be58,未找到相同 C 入口 Hook,当前根 Makefile 的 hooks/*.x,存在注册调用；运行时受目标类/系统版本/配置影响；loadJBHooks(true) 路径，false 路径改用 fishhook
+MSHookFunction,_getifaddrs,,0x11bbd8,__Z14new_getifaddrsPP7ifaddrs,已有相同 C 入口；行为/生效未等价验证,[hooks/NetworkConnectionTypeHooks.x](/Users/ww/Desktop/IOSManager/ProjectX_UnAuth/hooks/NetworkConnectionTypeHooks.x:636),存在注册调用；运行时受目标类/系统版本/配置影响；loadJBHooks(true) 路径，false 路径改用 fishhook
+MSHookFunction,_fopen,,0x11bbf4,__Z9new_fopenPKcS0_,未找到相同 C 入口 Hook,当前根 Makefile 的 hooks/*.x,存在注册调用；运行时受目标类/系统版本/配置影响；loadJBHooks(true) 路径，false 路径改用 fishhook
+MSHookFunction,_access,,0x11bc10,__Z10new_accessPKci,未找到相同 C 入口 Hook,当前根 Makefile 的 hooks/*.x,存在注册调用；运行时受目标类/系统版本/配置影响；loadJBHooks(true) 路径，false 路径改用 fishhook
+MSHookFunction,_getenv,,0x11bc2c,__Z13getenv_getenvPKc,未找到相同 C 入口 Hook,当前根 Makefile 的 hooks/*.x,存在注册调用；运行时受目标类/系统版本/配置影响；loadJBHooks(true) 路径，false 路径改用 fishhook
+MSHookFunction,_bind,,0x11bc48,__Z8new_bindiPK8sockaddrj,未找到相同 C 入口 Hook,当前根 Makefile 的 hooks/*.x,存在注册调用；运行时受目标类/系统版本/配置影响；loadJBHooks(true) 路径，false 路径改用 fishhook
+MSHookFunction,_raise,,0x11bc64,__Z9new_raisei,未找到相同 C 入口 Hook,当前根 Makefile 的 hooks/*.x,存在注册调用；运行时受目标类/系统版本/配置影响；loadJBHooks(true) 路径，false 路径改用 fishhook
+MSHookFunction,_objc_copyImageNames,,0x11bc80,__Z23new_objc_copyImageNamesPj,未找到相同 C 入口 Hook,当前根 Makefile 的 hooks/*.x,存在注册调用；运行时受目标类/系统版本/配置影响；loadJBHooks(true) 路径，false 路径改用 fishhook
+MSHookFunction,_CFNetworkCopySystemProxySettings,,0x11bc9c,__Z11new_CFProxyv,未找到相同 C 入口 Hook,当前根 Makefile 的 hooks/*.x,存在注册调用；运行时受目标类/系统版本/配置影响；loadJBHooks(true) 路径，false 路径改用 fishhook
+MSHookFunction,_MTLCreateSystemDefaultDevice,,0x11bcb8,__Z16new_MTLCreateDevv,未找到相同 C 入口 Hook,当前根 Makefile 的 hooks/*.x,存在注册调用；运行时受目标类/系统版本/配置影响；loadJBHooks(true) 路径，false 路径改用 fishhook
+MSHookFunction,_task_get_exception_ports,,0x11bcd4,__Z12new_GetportsjjPjS_S_PiS0_,未找到相同 C 入口 Hook,当前根 Makefile 的 hooks/*.x,存在注册调用；运行时受目标类/系统版本/配置影响；loadJBHooks(true) 路径，false 路径改用 fishhook
+MSHookFunction,SYM:mach_vm_region,,0x11bcfc,__Z18new_mach_vm_regionjPyS_iPiPjS1_,未找到相同 C 入口 Hook,当前根 Makefile 的 hooks/*.x,存在注册调用；运行时受目标类/系统版本/配置影响；loadJBHooks(true) 路径，false 路径改用 fishhook
+MSHookFunction,_readlink,,0x11bd4c,0x11bfb4,未找到相同 C 入口 Hook,当前根 Makefile 的 hooks/*.x,存在注册调用；运行时受目标类/系统版本/配置影响；loadJBHooks(true) 路径，false 路径改用 fishhook
+MSHookFunction,_connect,,0x11bd68,0x11c050,未找到相同 C 入口 Hook,当前根 Makefile 的 hooks/*.x,存在注册调用；运行时受目标类/系统版本/配置影响；loadJBHooks(true) 路径，false 路径改用 fishhook
+MSHookFunction,_dlopen,,0x11bd84,0x11c0b4,未找到相同 C 入口 Hook,当前根 Makefile 的 hooks/*.x,存在注册调用；运行时受目标类/系统版本/配置影响；loadJBHooks(true) 路径，false 路径改用 fishhook
+MSHookFunction,_dlsym,,0x11bda0,0x11c19c,未找到相同 C 入口 Hook,当前根 Makefile 的 hooks/*.x,存在注册调用；运行时受目标类/系统版本/配置影响；loadJBHooks(true) 路径，false 路径改用 fishhook
+MSHookFunction,_NSClassFromString,,0x11bdbc,0x11c21c,未找到相同 C 入口 Hook,当前根 Makefile 的 hooks/*.x,存在注册调用；运行时受目标类/系统版本/配置影响；loadJBHooks(true) 路径，false 路径改用 fishhook
+MSHookFunction,SYM:__open,,0x11be1c,__Z9my___openPKcit,未找到相同 C 入口 Hook,当前根 Makefile 的 hooks/*.x,存在注册调用；运行时受目标类/系统版本/配置影响；loadJBHooks(true) 路径，false 路径改用 fishhook
+MSHookMessageEx,CLASS:UIApplication,canOpenURL:,0x11c2dc,0x11cc94,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响
+MSHookMessageEx,CLASS:NSFileManager,fileExistsAtPath:,0x11c308,0x11cd54,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响
+MSHookMessageEx,CLASS:NSFileManager,contentsOfDirectoryAtPath:err:,0x11c328,0x11cfac,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响；二进制确为 err:，不能当作系统 error: 方法已成功 Hook
+MSHookMessageEx,CLASS:NSData,writeToFile:atomically:,0x11c354,0x11d09c,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响
+MSHookMessageEx,META:MPDevice,jailbrokenInfo,0x11c380,0x11d160,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响
+MSHookMessageEx,META:AppsFlyerUtils,isVPNConnected,0x11c3b0,0x11d1b0,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响
+MSHookMessageEx,META:AppsFlyerUtils,isJailBreakon,0x11c3d0,0x11d1b8,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响
+MSHookMessageEx,META:AppsFlyerUtils,isJailbrokenWithSkipAdvancedJailbreakValidation:,0x11c3f0,0x11d1c0,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响
+MSHookMessageEx,META:AppsFlyerUtils,deviceOrientation,0x11c410,0x11d1c8,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响
+MSHookMessageEx,CLASS:AppsFlyerTracker,setSkipAdvancedJailbreakValidation:,0x11c43c,0x11d260,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响
+MSHookMessageEx,CLASS:AppsFlyerTracker,getTimePassedSinceLastLaunch,0x11c45c,0x11d264,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响
+MSHookMessageEx,META:BSG_KSSystemInfo,isJailbroken,0x11c48c,0x11d26c,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响
+MSHookMessageEx,CLASS:AIMetaDataCollector,getDeviceJailbrokenState,0x11c4b4,0x11d274,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响
+MSHookMessageEx,META:OneSignalJailbreakDetection,isJailbroken,0x11c4dc,0x11d284,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响
+MSHookMessageEx,META:MOBFDevice,hasJailBroken,0x11c508,0x11d28c,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响
+MSHookMessageEx,META:UMUtils,isDeviceJailBreak,0x11c534,0x11d294,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响
+MSHookMessageEx,META:OKBCydia,isJailbroken,0x11c55c,0x11d29c,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响
+MSHookMessageEx,CLASS:OKEnvironment,isOKCoin,0x11c588,0x11d2a4,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响
+MSHookMessageEx,CLASS:OKEnvironment,isJailbroken,0x11c5a4,0x11d2ac,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响
+MSHookMessageEx,META:MobClick,isJailbroken,0x11c5cc,0x11d2b4,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响
+MSHookMessageEx,META:PPRiskDeviceData,isJailBroken,0x11c5fc,0x11d2bc,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响
+MSHookMessageEx,CLASS:ANSMetadata,computeIsJailbroken,0x11c628,0x11d2c4,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响
+MSHookMessageEx,CLASS:ANSMetadata,isJailbroken,0x11c644,0x11d2cc,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响
+MSHookMessageEx,META:JBChecker,mflsfdRfewqe,0x11c670,0x11d2d4,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响
+MSHookMessageEx,CLASS:PPRMOCMagnesCoreDataCollector,isJailBroken,0x11c694,0x11d2dc,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响
+MSHookMessageEx,CLASS:SBHomeHardwareButtonActions,performSinglePressUpActions,0x11c6c0,0x11d2e4,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响
+MSHookMessageEx,CLASS:SBHomeHardwareButtonActions,performDoubleTapUpActions,0x11c6e0,0x11d320,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响
+MSHookMessageEx,CLASS:SBHomeHardwareButtonActions,performDoublePressDownActions,0x11c700,0x11d35c,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响
+MSHookMessageEx,CLASS:FFMClassZeroOne,czoSymbolZeroSix,0x11c728,0x11d398,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响
+MSHookMessageEx,CLASS:FFMClassOneFour,cofoSymbolZeroTwo,0x11c750,0x11d8f4,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响
+MSHookMessageEx,CLASS:MFMessageComposeViewController,canSendAttachments,0x11c77c,0x11d8fc,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响
+MSHookMessageEx,CLASS:MFMessageComposeViewController,canSendSubject,0x11c79c,0x11d904,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响
+MSHookMessageEx,CLASS:MFMessageComposeViewController,canSendText,0x11c7bc,0x11d90c,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响
+MSHookMessageEx,META:PuGo29z,Xi05UCs,0x11c7e8,0x11d914,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响
+MSHookMessageEx,CLASS:SBMainWorkspace,systemService:handleOpenApplicationRequest:withCompletion:,0x11c810,0x11d934,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响
+MSHookMessageEx,CLASS:NSString,writeToFile:atomically:,0x11c844,0x11da34,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响
+MSHookMessageEx,META:NSString,stringWithCString:encoding:,0x11c88c,0x11db64,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响
+MSHookMessageEx,META:EFBreakTheCageChecker,isJailBreakPath,0x11c8bc,0x11dcc4,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响
+MSHookMessageEx,META:EFBreakTheCageChecker,isJailBreakCydia,0x11c8dc,0x11dcd0,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响
+MSHookMessageEx,META:EFBreakTheCageChecker,isJailBreakAppName,0x11c8fc,0x11dcdc,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响
+MSHookMessageEx,META:EFBreakTheCageChecker,isJailBreakDYLD,0x11c91c,0x11dce8,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响
+MSHookMessageEx,META:EFBreakTheCageChecker,isJailBreakPath_new,0x11c93c,0x11dcf4,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响
+MSHookMessageEx,META:EFBreakTheCageChecker,isJailBreakCydia_new,0x11c95c,0x11dd00,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响
+MSHookMessageEx,META:EFBreakTheCageChecker,isJailBreakDYLD_new,0x11c97c,0x11dd0c,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响
+MSHookMessageEx,META:EFBreakTheCageChecker,isJailBreakLibs_new,0x11c99c,0x11dd18,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响
+MSHookMessageEx,META:EFBreakTheCageChecker,isJailBreakHookNSFileManager_new,0x11c9bc,0x11dd24,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响
+MSHookMessageEx,META:EFBreakTheCageChecker,isJailBreakHookC_new,0x11c9dc,0x11dd30,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响
+MSHookMessageEx,CLASS:IGLocationTrackingService,start,0x11ca04,0x11dd3c,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响
+MSHookMessageEx,CLASS:JailMonkey,isJailBroken,0x11ca2c,0x11dd40,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响
+MSHookMessageEx,CLASS:JailMonkey,canMockLocation,0x11ca4c,0x11dd48,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响
+MSHookMessageEx,CLASS:JailMonkey,canFork,0x11ca6c,0x11dd50,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响
+MSHookMessageEx,CLASS:JailMonkey,canViolateSandbox,0x11ca8c,0x11dd58,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响
+MSHookMessageEx,CLASS:JailMonkey,isDebugged,0x11caac,0x11dd60,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响
+MSHookMessageEx,META:SecurityWarnings,isDeviceJailbroken,0x11cadc,0x11dd68,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响
+MSHookMessageEx,META:SecurityWarnings,isHooked,0x11cafc,0x11dd70,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响
+MSHookMessageEx,META:SecurityWarnings,isDebuggerAttached,0x11cb1c,0x11dd78,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响
+MSHookMessageEx,CLASS:ISDeviceInfoService,jailBroken,0x11cb44,0x11dd80,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响
+MSHookMessageEx,META:PAGDeviceHelper,bu_isJailBroken,0x11cb70,0x11dd88,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响
+MSHookMessageEx,CLASS:BLYDevice,isJailbroken,0x11cb94,0x11dd90,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响
+MSHookMessageEx,META:MTGDeviceHandler,isVpOn,0x11cbc4,0x11dd98,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响
+MSHookMessageEx,META:MTGDeviceHandler,isProOn,0x11cbe4,0x11dda0,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响
+MSHookMessageEx,CLASS:MTGDeviceInfo,returnDeviceInfoDic,0x11cc0c,0x11dda8,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响
+MSHookMessageEx,META:turing_HIreYaasq8l5EBASEOS,rootFlag,0x11cc3c,0x11df28,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响
+MSHookMessageEx,META:turing_HIreYaasq8l5EBASEOS,injectingImageNames,0x11cc5c,0x11df30,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响
+MSHookMessageEx,<AppDelegate / SceneDelegate 的运行时类>,application:didFinishLaunchingWithOptions:,0x120934,__Z25new_UIApplicationDelegateP11objc_objectP13objc_selectorP13UIApplicationP12NSDictionary,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响；目标类通过运行时值确定
+MSHookMessageEx,<AppDelegate / SceneDelegate 的运行时类>,applicationWillResignActive:,0x120954,__Z31new_ApplicationWillResignActiveP11objc_objectP13objc_selectorP13UIApplication,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响；目标类通过运行时值确定
+MSHookMessageEx,<AppDelegate / SceneDelegate 的运行时类>,applicationDidEnterBackground:,0x120974,__Z33new_ApplicationDidEnterBackgroundP11objc_objectP13objc_selectorP13UIApplication,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响；目标类通过运行时值确定
+MSHookMessageEx,<AppDelegate / SceneDelegate 的运行时类>,applicationDidBecomeActive:,0x120994,__Z24new_ApplicationDidActiveP11objc_objectP13objc_selectorP13UIApplication,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响；目标类通过运行时值确定
+MSHookMessageEx,<AppDelegate / SceneDelegate 的运行时类>,application:didRegisterForRemoteNotificationsWithDeviceToken:,0x1209b4,__Z25new_didRegisterForRemoteNP11objc_objectP13objc_selectorP13UIApplicationP6NSData,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响；目标类通过运行时值确定
+MSHookMessageEx,<AppDelegate / SceneDelegate 的运行时类>,applicationWillTerminate:,0x1209d4,__Z28new_applicationWillTerminateP11objc_objectP13objc_selectorP13UIApplication,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响；目标类通过运行时值确定
+MSHookMessageEx,<AppDelegate / SceneDelegate 的运行时类>,application:openURL:options:,0x120a1c,__Z22new_applicationOpenUrlP11objc_objectP13objc_selectorP13UIApplicationP5NSURLP12NSDictionary,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响；目标类通过运行时值确定
+MSHookMessageEx,<AppDelegate / SceneDelegate 的运行时类>,sceneWillResignActive:,0x120a8c,__Z25new_sceneWillResignActiveP11objc_objectP13objc_selectorP7UIScene,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响；目标类通过运行时值确定
+MSHookMessageEx,<AppDelegate / SceneDelegate 的运行时类>,sceneWillResignActive:,0x120ecc,__Z25new_sceneWillResignActiveP11objc_objectP13objc_selectorP7UIScene,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响；目标类通过运行时值确定
+MSHookMessageEx,CLASS:UIView,addInteraction:,0x121174,0x1214f0,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响
+MSHookMessageEx,CLASS:NSURLSession,dataTaskWithRequest:completionHandler:,0x1213c4,0x1215f4,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响
+MSHookMessageEx,META:NSMutableURLRequest,requestWithURL:,0x1213f0,0x121870,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响
+MSHookFunction,_UIApplicationMain,,0x121440,__Z21new_UIApplicationMainiPPcP8NSStringS2_,未找到相同 C 入口 Hook,当前根 Makefile 的 hooks/*.x,存在注册调用；运行时受目标类/系统版本/配置影响
+MSHookMessageEx,CLASS:PTURegulationManager,startUpdateLocation,0x121970,0x121ad8,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响
+MSHookMessageEx,META:BDInstallNetworkUtility,isJailBroken,0x12199c,0x121b14,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响
+MSHookMessageEx,META:BDUGShareBaseUtil,_shouldHandleJailBrokenCase,0x1219d0,0x121b1c,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响
+MSHookMessageEx,META:BDUGShareBaseUtil,isJailBroken,0x1219fc,0x121b24,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响
+MSHookMessageEx,CLASS:PIPOStoreKitHelper,isJailBroken,0x121a24,0x121b2c,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响
+MSHookFunction,<Memora 镜像 slide + 0x10095ae4c>,,0x121abc,0x121b34,未找到相同 C 入口 Hook,当前根 Makefile 的 hooks/*.x,专用固定偏移 Hook；日志写 admob；适用 App/版本和实际用途未确认。自动传播的 0x1 不是真实目标地址
+MSHookMessageEx,META:HMDLaunchTimingUserTrace,startTraceUseProcExec,0x1220d4,0x12238c,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响；独立扩展构造器
+MSHookMessageEx,META:HMDLaunchTimingUserTrace,startSpanWithTaskName:,0x1220f4,0x1223a8,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响；独立扩展构造器
+MSHookMessageEx,META:HMDLaunchTimingUserTrace,endSpanWithTaskName:,0x122114,0x1223c4,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响；独立扩展构造器
+MSHookMessageEx,META:YjAxOGE4YTAwODQ5MjMxZTY2_EC,load,0x122144,0x1223e0,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响；独立扩展构造器
+MSHookMessageEx,META:MWFmMDM5OTk2ZTdkMWY4ZmUy_EC,load,0x12216c,0x1223e4,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响；独立扩展构造器
+MSHookMessageEx,META:NGMzNzhjNmI0NDQyMzdiNTc0_EC,load,0x122194,0x1223e8,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响；独立扩展构造器
+MSHookMessageEx,META:NzY1YjdiMzkwYzc2N2U5YWMz_EC,load,0x1221bc,0x1223ec,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响；独立扩展构造器
+MSHookMessageEx,META:AppsFlyerAES128Crypto,encrypt:withObject:,0x1221e8,0x1223f0,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响；独立扩展构造器
+MSHookMessageEx,META:ATURLArgumentModule,getTrackCommonParameters,0x122214,0x1226f4,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响；独立扩展构造器
+MSHookMessageEx,META:ALUtils,isVPNConnected,0x122240,0x12273c,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响；独立扩展构造器
+MSHookMessageEx,CLASS:ALDataCollector,requestParametersWithAdInfo:nested:,0x122268,0x122744,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响；独立扩展构造器
+MSHookMessageEx,META:BGAdDeviceUtils,isJailbroken,0x122294,0x1227c0,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响；独立扩展构造器
+MSHookMessageEx,CLASS:ISDeviceInfoService,jailBroken,0x1222bc,0x1227c8,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响；独立扩展构造器
+MSHookMessageEx,META:PDXC,load,0x1222e8,0x1227d0,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响；独立扩展构造器
+MSHookMessageEx,CLASS:PDXC,disable_gdb,0x122308,0x1227d4,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响；独立扩展构造器
+MSHookMessageEx,CLASS:PDXC,pc,0x122328,0x1227d8,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响；独立扩展构造器
+MSHookMessageEx,META:ALISCSecurity,isJailBreak,0x122354,0x1227e0,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响；独立扩展构造器
+MSHookMessageEx,META:PluginShieldfraudPlugin,registerWithRegistrar:,0x122388,0x1227e8,未找到同类同方法直接 Hook,当前根 Makefile 的 hooks/*.x；排除 0 字节历史目录,存在注册调用；运行时受目标类/系统版本/配置影响；独立扩展构造器
+MSHookMessageEx,CLASS:WKWebViewConfiguration,setUserContentController:,0x1228b8,0x122910,已有同名 Hook；行为/生效未等价验证,/Users/ww/Desktop/IOSManager/ProjectX_UnAuth/hooks/CanvasFingerprintHooks.x:205,存在注册调用；运行时受目标类/系统版本/配置影响
+MSHookMessageEx,CLASS:WKWebView,_didFinishLoadForFrame:,0x1228e0,0x122a64,已有同名 Hook；行为/生效未等价验证,/Users/ww/Desktop/IOSManager/ProjectX_UnAuth/hooks/CanvasFingerprintHooks.x:344; /Users/ww/Desktop/IOSManager/ProjectX_UnAuth/hooks/DeviceSpecHooks.x:330,存在注册调用；运行时受目标类/系统版本/配置影响
+MSHookMessageEx,CLASS:WKNativeCanvas,drawingData,0x12290c,0x122ab4,已有同名 Hook；行为/生效未等价验证,/Users/ww/Desktop/IOSManager/ProjectX_UnAuth/hooks/CanvasFingerprintHooks.x:511,存在注册调用；运行时受目标类/系统版本/配置影响
+fishhook表项,_dyld_get_image_name,,0x2e4d90,0x11be58,未找到相同 C 入口 Hook,当前根 Makefile 的 hooks/*.x,注册调用 0x11bd20，loadJBHooks(false) 路径；与多数 Substrate 条目为同一目标的替代机制，不重复统计成功功能
+fishhook表项,getifaddrs,,0x2e4da8,__Z14new_getifaddrsPP7ifaddrs,已有相同 C 入口；行为/生效未等价验证,[hooks/NetworkConnectionTypeHooks.x](/Users/ww/Desktop/IOSManager/ProjectX_UnAuth/hooks/NetworkConnectionTypeHooks.x:636),注册调用 0x11bd20，loadJBHooks(false) 路径；与多数 Substrate 条目为同一目标的替代机制，不重复统计成功功能
+fishhook表项,fopen,,0x2e4dc0,__Z9new_fopenPKcS0_,未找到相同 C 入口 Hook,当前根 Makefile 的 hooks/*.x,注册调用 0x11bd20，loadJBHooks(false) 路径；与多数 Substrate 条目为同一目标的替代机制，不重复统计成功功能
+fishhook表项,lstat,,0x2e4dd8,__Z9new_lstatPKcP4stat,未找到相同 C 入口 Hook,当前根 Makefile 的 hooks/*.x,注册调用 0x11bd20，loadJBHooks(false) 路径；与多数 Substrate 条目为同一目标的替代机制，不重复统计成功功能
+fishhook表项,stat,,0x2e4df0,__Z8new_statPKcP4stat,未找到相同 C 入口 Hook,当前根 Makefile 的 hooks/*.x,注册调用 0x11bd20，loadJBHooks(false) 路径；与多数 Substrate 条目为同一目标的替代机制，不重复统计成功功能
+fishhook表项,access,,0x2e4e08,__Z10new_accessPKci,未找到相同 C 入口 Hook,当前根 Makefile 的 hooks/*.x,注册调用 0x11bd20，loadJBHooks(false) 路径；与多数 Substrate 条目为同一目标的替代机制，不重复统计成功功能
+fishhook表项,getenv,,0x2e4e20,__Z13getenv_getenvPKc,未找到相同 C 入口 Hook,当前根 Makefile 的 hooks/*.x,注册调用 0x11bd20，loadJBHooks(false) 路径；与多数 Substrate 条目为同一目标的替代机制，不重复统计成功功能
+fishhook表项,bind,,0x2e4e38,__Z8new_bindiPK8sockaddrj,未找到相同 C 入口 Hook,当前根 Makefile 的 hooks/*.x,注册调用 0x11bd20，loadJBHooks(false) 路径；与多数 Substrate 条目为同一目标的替代机制，不重复统计成功功能
+fishhook表项,raise,,0x2e4e50,__Z9new_raisei,未找到相同 C 入口 Hook,当前根 Makefile 的 hooks/*.x,注册调用 0x11bd20，loadJBHooks(false) 路径；与多数 Substrate 条目为同一目标的替代机制，不重复统计成功功能
+fishhook表项,objc_copyImageNames,,0x2e4e68,__Z23new_objc_copyImageNamesPj,未找到相同 C 入口 Hook,当前根 Makefile 的 hooks/*.x,注册调用 0x11bd20，loadJBHooks(false) 路径；与多数 Substrate 条目为同一目标的替代机制，不重复统计成功功能
+fishhook表项,CFNetworkCopySystemProxySettings,,0x2e4e80,__Z11new_CFProxyv,未找到相同 C 入口 Hook,当前根 Makefile 的 hooks/*.x,注册调用 0x11bd20，loadJBHooks(false) 路径；与多数 Substrate 条目为同一目标的替代机制，不重复统计成功功能
+fishhook表项,MTLCreateSystemDefaultDevice,,0x2e4e98,__Z16new_MTLCreateDevv,未找到相同 C 入口 Hook,当前根 Makefile 的 hooks/*.x,注册调用 0x11bd20，loadJBHooks(false) 路径；与多数 Substrate 条目为同一目标的替代机制，不重复统计成功功能
+fishhook表项,task_get_exception_ports,,0x2e4eb0,__Z12new_GetportsjjPjS_S_PiS0_,未找到相同 C 入口 Hook,当前根 Makefile 的 hooks/*.x,注册调用 0x11bd20，loadJBHooks(false) 路径；与多数 Substrate 条目为同一目标的替代机制，不重复统计成功功能
+fishhook表项,mach_vm_region,,0x2e4ec8,__Z18new_mach_vm_regionjPyS_iPiPjS1_,未找到相同 C 入口 Hook,当前根 Makefile 的 hooks/*.x,注册调用 0x11bd20，loadJBHooks(false) 路径；与多数 Substrate 条目为同一目标的替代机制，不重复统计成功功能
+fishhook表项,readlink,,0x2e4ee0,0x11bfb4,未找到相同 C 入口 Hook,当前根 Makefile 的 hooks/*.x,注册调用 0x11bd20，loadJBHooks(false) 路径；与多数 Substrate 条目为同一目标的替代机制，不重复统计成功功能
+fishhook表项,connect,,0x2e4ef8,0x11c050,未找到相同 C 入口 Hook,当前根 Makefile 的 hooks/*.x,注册调用 0x11bd20，loadJBHooks(false) 路径；与多数 Substrate 条目为同一目标的替代机制，不重复统计成功功能
+fishhook表项,dlopen,,0x2e4f10,0x11c0b4,未找到相同 C 入口 Hook,当前根 Makefile 的 hooks/*.x,注册调用 0x11bd20，loadJBHooks(false) 路径；与多数 Substrate 条目为同一目标的替代机制，不重复统计成功功能
+fishhook表项,dlsym,,0x2e4f28,0x11c19c,未找到相同 C 入口 Hook,当前根 Makefile 的 hooks/*.x,注册调用 0x11bd20，loadJBHooks(false) 路径；与多数 Substrate 条目为同一目标的替代机制，不重复统计成功功能
+fishhook表项,NSClassFromString,,0x2e4f40,0x11c21c,未找到相同 C 入口 Hook,当前根 Makefile 的 hooks/*.x,注册调用 0x11bd20，loadJBHooks(false) 路径；与多数 Substrate 条目为同一目标的替代机制，不重复统计成功功能

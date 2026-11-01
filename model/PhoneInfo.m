@@ -1,10 +1,12 @@
 #import "PhoneInfo.h"
+#import "PXConfiguration.h"
 
 @implementation PhoneInfo
 #pragma mark - JSON 序列化
 
 - (NSDictionary *)toDictionary {
     NSMutableDictionary *dict = [NSMutableDictionary dictionary];
+    dict[@"runtime"] = self.runtime ?: @{};
     
     // 设备标识信息
     dict[@"idfa"] = self.idfa ?: @"";
@@ -46,6 +48,7 @@
     }
     
     PhoneInfo *phoneInfo = [[PhoneInfo alloc] init];
+    phoneInfo.runtime = PXValidateRuntime(dict[@"runtime"] ?: @{}, NULL) ?: @{};
     
     // 设备标识信息
     phoneInfo.idfa = dict[@"idfa"] ?: @"";
@@ -143,6 +146,8 @@
  * @return 保存是否成功
  */
 + (BOOL)saveDictionaryToPrefs:(NSDictionary *)dict {
+    NSError *validationError = nil;
+    if (!PXValidatePhoneDictionary(dict, &validationError)) return NO;
     if (!dict || ![dict isKindOfClass:[NSDictionary class]]) {
         NSLog(@"无效的字典参数");
         return NO;
@@ -157,12 +162,14 @@
         kCFPreferencesCurrentHost
     );
 
-    CFPreferencesSynchronize(
+    BOOL success = CFPreferencesSynchronize(
         CFSTR("com.projectx.phoneinfo"),
         kCFPreferencesAnyUser,
         kCFPreferencesCurrentHost
     );
-    return YES;
+    if (success) CFNotificationCenterPostNotification(CFNotificationCenterGetDarwinNotifyCenter(),
+        CFSTR("com.projectx.phoneinfo.changed"), NULL, NULL, YES);
+    return success;
 }
 /**
  * 静态方法：将 NSDictionary 直接保存为 JSON 文件
@@ -415,6 +422,7 @@
     
     return @{
         @"upTime": @(self.upTime),
+        @"bootTimeEpoch": self.bootTime ? @(self.bootTime.timeIntervalSince1970) : @0,
         @"bootTime": bootTimeStr
     };
 }
@@ -422,10 +430,15 @@
 + (instancetype)fromDictionary:(NSDictionary *)dict {
     UpTimeInfo *upTimeInfo = [[UpTimeInfo alloc] init];
     upTimeInfo.upTime = [dict[@"upTime"] doubleValue];
+    if ([dict[@"bootTimeEpoch"] isKindOfClass:NSNumber.class] && [dict[@"bootTimeEpoch"] doubleValue]>0) {
+        upTimeInfo.bootTime=[NSDate dateWithTimeIntervalSince1970:[dict[@"bootTimeEpoch"] doubleValue]];
+        return upTimeInfo;
+    }
     
     NSString *bootTimeStr = dict[@"bootTime"];
     if (bootTimeStr && [bootTimeStr isKindOfClass:[NSString class]] && bootTimeStr.length > 0) {
         NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+        formatter.timeZone=CFBridgingRelease(CFTimeZoneCopySystem());
         formatter.dateFormat = @"yyyy-MM-dd HH:mm:ss";
         upTimeInfo.bootTime = [formatter dateFromString:bootTimeStr];
     }
@@ -448,6 +461,7 @@
         @"hwModel": self.hwModel ?: @"",
         @"gpuFamily": self.gpuFamily ?: @"",
         @"deviceMemory": self.deviceMemory ?: @0,
+        @"physicalMemoryBytes": self.physicalMemoryBytes ?: @0,
         @"cpuCoreCount": self.cpuCoreCount ?: @0,
         @"webGLInfo": [self.webGLInfo toDictionary] ?: @{}
     };
@@ -465,6 +479,7 @@
     deviceModel.hwModel = dict[@"hwModel"] ?: @"";
     deviceModel.gpuFamily = dict[@"gpuFamily"] ?: @"";
     deviceModel.deviceMemory = dict[@"deviceMemory"] ?: @0;
+    deviceModel.physicalMemoryBytes = [dict[@"physicalMemoryBytes"] isKindOfClass:NSNumber.class] ? dict[@"physicalMemoryBytes"] : @0;
     deviceModel.cpuCoreCount = dict[@"cpuCoreCount"] ?: @0;
     
     NSDictionary *webGLInfoDict = dict[@"webGLInfo"];
@@ -512,6 +527,7 @@
 
 - (NSDictionary *)toDictionary{
       return @{
+        @"radioAccessTechnology": self.radioAccessTechnology ?: @"CTRadioAccessTechnologyLTE",
         @"carrierName": self.carrierName ?: @"",
         @"mcc": self.mcc ?: @"",
         @"mnc": self.mnc ?: @"",
@@ -523,6 +539,7 @@
 }
 + (instancetype)fromDictionary:(NSDictionary *)dict{
     NetworkInfo *networkInfo = [[NetworkInfo alloc] init];
+    networkInfo.radioAccessTechnology = [dict[@"radioAccessTechnology"] isKindOfClass:NSString.class] ? dict[@"radioAccessTechnology"] : @"CTRadioAccessTechnologyLTE";
     networkInfo.carrierName = dict[@"carrierName"] ?: @"";
     networkInfo.mcc = dict[@"mcc"] ?: @"";
     networkInfo.mnc = dict[@"mnc"] ?: @"";

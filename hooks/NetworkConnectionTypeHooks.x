@@ -343,6 +343,7 @@ Boolean hooked_SCNetworkReachabilityGetFlags(SCNetworkReachabilityRef target, SC
 }
 
 - (NSString *)currentRadioAccessTechnology {
+    if (CurrentPhoneInfo().networkInfo.radioAccessTechnology.length) return CurrentPhoneInfo().networkInfo.radioAccessTechnology;
     // if (shouldShowAsCellular()) {
     //     return getCurrentCellularNetworkType();
     // }
@@ -351,6 +352,13 @@ Boolean hooked_SCNetworkReachabilityGetFlags(SCNetworkReachabilityRef target, SC
 }
 
 - (NSDictionary<NSString *, NSString *> *)serviceCurrentRadioAccessTechnology {
+    if (CurrentPhoneInfo().networkInfo.radioAccessTechnology.length) {
+        NSDictionary *original=%orig;
+        NSMutableDictionary *result=[NSMutableDictionary dictionary];
+        for (NSString *key in original) result[key]=CurrentPhoneInfo().networkInfo.radioAccessTechnology;
+        if (!result.count) result[@"0000000100000001"]=CurrentPhoneInfo().networkInfo.radioAccessTechnology;
+        return result;
+    }
     if (shouldShowAsCellular()) {
         return @{ @"0": getCurrentCellularNetworkType() };
     }

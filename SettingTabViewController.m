@@ -1,4 +1,5 @@
 #import "SettingTabViewController.h"
+#import "PXToolsViewController.h"
 #import "ProjectXLogging.h"
 #import <notify.h>  // Add this import for Darwin notification functions
 #import <CoreLocation/CoreLocation.h>
@@ -9,6 +10,7 @@
 #import "DaemonApiManager.h"
 
 @implementation SettingTabViewController
+- (void)openTools { [self.navigationController pushViewController:[PXToolsViewController new] animated:YES]; }
 
 - (instancetype)init {
     self = [super init];
@@ -44,6 +46,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    self.navigationItem.rightBarButtonItem=[[UIBarButtonItem alloc] initWithTitle:@"参数与工具" style:UIBarButtonItemStylePlain target:self action:@selector(openTools)];
     self.view.backgroundColor = [UIColor systemBackgroundColor]; // Use system theme color
     
     
@@ -247,6 +250,7 @@
 }
 
 - (void)saveSettings {
+    [[SettingManager sharedManager] loadFromPrefs];
     NSString *carrier = self.carrierOptions[self.selectedCarrierIndex];
     NSString *system1 = self.systemVersionOptions[self.selectedSystemIndex1];
     NSString *system2 = self.systemVersionOptions[self.selectedSystemIndex2];
@@ -254,8 +258,10 @@
     settingManager.carrierCountryCode = carrier;
     settingManager.minVersion = system1;
     settingManager.maxVersion = system2;
-    [settingManager saveToPrefs];
-    [self showSuccessMessage:@"保存成功"];
+    NSDictionary *settings=@{@"carrierCountryCode":carrier,@"minVersion":system1,@"maxVersion":system2,@"options":settingManager.options ?: @{}};
+    [[DaemonApiManager sharedManager] executeCommand:@"saveSettings" parameters:settings completion:^(id result,NSError *error) {
+        dispatch_async(dispatch_get_main_queue(),^{ [self showSuccessMessage:error?error.localizedDescription:@"保存成功"]; });
+    }];
 }
 - (void)showSuccessMessage:(NSString *)message {
     // 方法1：使用 UIAlertController（iOS 8+）

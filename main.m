@@ -1,6 +1,7 @@
 #import <UIKit/UIKit.h>
 #import "TabBarController.h"
 #import <UserNotifications/UserNotifications.h>
+#import "PXCommandRouter.h"
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate, UNUserNotificationCenterDelegate>
 @property (strong, nonatomic) UIWindow *window;
@@ -19,6 +20,8 @@
     
     self.window.rootViewController = tabBarController;
     [self.window makeKeyAndVisible];
+    NSURL *url=launchOptions[UIApplicationLaunchOptionsURLKey];
+    if (url) [PXCommandRouter handleURL:url];
     
     return YES;
 }
@@ -42,6 +45,9 @@
 - (void)applicationDidBecomeActive:(UIApplication *)application {
     // Use an atomic flag to prevent multiple concurrent auth checks
  
+}
+- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url options:(NSDictionary *)options {
+    return [PXCommandRouter handleURL:url];
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application {

@@ -1,4 +1,6 @@
 #import "ProfileManager.h"
+#import "PXConfiguration.h"
+#import <sys/stat.h>
 
 static NSString *const PXDefaultDataDirectory = @"/private/var/mobile/Media/ProjectX";
 
@@ -11,6 +13,7 @@ static NSString *const PXDefaultDataDirectory = @"/private/var/mobile/Media/Proj
         _id = [coder decodeObjectOfClass:[NSString class] forKey:@"id"];
         _name = [coder decodeObjectOfClass:[NSString class] forKey:@"name"];
         _createdDate = [coder decodeObjectOfClass:[NSDate class] forKey:@"createdDate"];
+        _disabledUntil = [coder decodeObjectOfClass:[NSDate class] forKey:@"disabledUntil"];
     }
     return self;
 }
@@ -19,17 +22,20 @@ static NSString *const PXDefaultDataDirectory = @"/private/var/mobile/Media/Proj
     [coder encodeObject:_id forKey:@"id"];
     [coder encodeObject:_name forKey:@"name"];
     [coder encodeObject:_createdDate forKey:@"createdDate"];
+    [coder encodeObject:_disabledUntil forKey:@"disabledUntil"];
 }
 
 - (NSDictionary *)toDictionary {
     return @{@"id": self.id ?: @"", @"name": self.name ?: @"",
-             @"createdDate": self.createdDate ? @([self.createdDate timeIntervalSince1970]) : @0};
+             @"createdDate": self.createdDate ? @([self.createdDate timeIntervalSince1970]) : @0,
+             @"disabledUntil": self.disabledUntil ? @(self.disabledUntil.timeIntervalSince1970) : @0};
 }
 
 + (Profile *)fromDictionary:(NSDictionary *)dict {
     if (![dict isKindOfClass:[NSDictionary class]] ||
         ![dict[@"id"] isKindOfClass:[NSString class]] || ![dict[@"id"] length]) return nil;
     NSString *identifier = dict[@"id"];
+    if (identifier.length>128 || [identifier hasPrefix:@"."] || [@[@"transfer",@"profiles.json",@"phoneinfo.json"] containsObject:identifier.lowercaseString] || [identifier rangeOfCharacterFromSet:[[NSCharacterSet characterSetWithCharactersInString:@"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789._-"] invertedSet]].location!=NSNotFound) return nil;
     // IDs are also directory names. Refuse path components from corrupt metadata.
     if ([identifier isEqualToString:@"."] || [identifier isEqualToString:@".."] ||
         [identifier rangeOfString:@"/"].location != NSNotFound) return nil;
@@ -40,8 +46,12 @@ static NSString *const PXDefaultDataDirectory = @"/private/var/mobile/Media/Proj
     if (([date isKindOfClass:[NSNumber class]] || [date isKindOfClass:[NSString class]]) && [date doubleValue] > 0) {
         profile.createdDate = [NSDate dateWithTimeIntervalSince1970:[date doubleValue]];
     }
+    id disabled=dict[@"disabledUntil"];
+    if ([disabled isKindOfClass:NSNumber.class] && [disabled doubleValue]>0)
+        profile.disabledUntil=[NSDate dateWithTimeIntervalSince1970:[disabled doubleValue]];
     return profile;
 }
+- (BOOL)isDisabled { return self.disabledUntil && [self.disabledUntil timeIntervalSinceNow]>0; }
 @end
 
 @interface ProfileManager ()
@@ -150,7 +160,9 @@ static NSString *const PXDefaultDataDirectory = @"/private/var/mobile/Media/Proj
     }
 }
 
-- (NSString *)genBackupDirectory {
+- (NSString *)genBackupDirectory { return [self createBackupDirectoryActivating:YES]; }
+- (NSString *)genInactiveBackupDirectory { return [self createBackupDirectoryActivating:NO]; }
+- (NSString *)createBackupDirectoryActivating:(BOOL)activate {
     @synchronized (self) {
         NSString *identifier;
         NSString *path;
@@ -165,7 +177,7 @@ static NSString *const PXDefaultDataDirectory = @"/private/var/mobile/Media/Proj
         profile.createdDate = [NSDate date];
         NSString *previousId = self.currentId;
         [self.mutableProfiles addObject:profile];
-        self.currentId = identifier;
+        if (activate) self.currentId = identifier;
         if (![self saveData]) {
             [self.mutableProfiles removeLastObject];
             self.currentId = previousId;
@@ -201,12 +213,25 @@ static NSString *const PXDefaultDataDirectory = @"/private/var/mobile/Media/Proj
 
 - (BOOL)switchToProfile:(Profile *)profile {
     @synchronized (self) {
-        if (![self getProfileById:profile.id]) return NO;
+        Profile *stored=[self getProfileById:profile.id];
+        if (!stored || stored.isDisabled) return NO;
         NSString *previousId = self.currentId;
         self.currentId = profile.id;
         if ([self saveData]) return YES;
         self.currentId = previousId;
         return NO;
+    }
+}
+- (BOOL)removeProfilesWithIDs:(NSArray<NSString *> *)identifiers {
+    @synchronized (self) {
+        for (id identifier in identifiers) if (![identifier isKindOfClass:NSString.class]) return NO;
+        NSArray *previous=[self.mutableProfiles copy];
+        NSIndexSet *indexes=[self.mutableProfiles indexesOfObjectsPassingTest:^BOOL(Profile *p,NSUInteger idx,BOOL *stop) {
+            return [identifiers containsObject:p.id] && ![self isCurrent:p] && ![p.id isEqual:@"0"];
+        }];
+        [self.mutableProfiles removeObjectsAtIndexes:indexes];
+        if ([self saveData]) return YES;
+        self.mutableProfiles=[previous mutableCopy]; return NO;
     }
 }
 
@@ -224,6 +249,76 @@ static NSString *const PXDefaultDataDirectory = @"/private/var/mobile/Media/Proj
 }
 
 - (NSString *)getActiveProfileId { return self.currentId; }
+- (NSString *)dataDirectory { return self.profilesDirectory; }
+- (NSString *)pathForProfile:(NSString *)identifier {
+    return [self getProfileById:identifier]?[self.profilesDirectory stringByAppendingPathComponent:identifier]:nil;
+}
+- (BOOL)setDisabledUntil:(NSDate *)date forProfile:(NSString *)identifier {
+    @synchronized (self) {
+        Profile *profile=[self getProfileById:identifier];
+        if (!profile || ([self isCurrent:profile] && [date timeIntervalSinceNow]>0)) return NO;
+        NSDate *previous=profile.disabledUntil; profile.disabledUntil=date;
+        if ([self saveData]) return YES;
+        profile.disabledUntil=previous; return NO;
+    }
+}
+- (BOOL)moveProfile:(NSString *)identifier toIndex:(NSUInteger)index {
+    @synchronized (self) {
+        Profile *profile=[self getProfileById:identifier];
+        if (!profile || index>=self.mutableProfiles.count) return NO;
+        NSArray *previous=[self.mutableProfiles copy];
+        [self.mutableProfiles removeObject:profile]; [self.mutableProfiles insertObject:profile atIndex:index];
+        if ([self saveData]) return YES;
+        self.mutableProfiles=[previous mutableCopy]; return NO;
+    }
+}
+- (Profile *)navigationTarget:(NSString *)operation wrap:(BOOL)wrap {
+    @synchronized (self) {
+        NSArray *profiles=[self.mutableProfiles filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(Profile *p,NSDictionary *bindings) { return !p.isDisabled; }]];
+        if ([operation isEqual:@"first"]) return profiles.firstObject;
+        if ([operation isEqual:@"last"]) return profiles.lastObject;
+        if (![@[@"next",@"previous"] containsObject:operation] || !profiles.count) return nil;
+        NSInteger current=[profiles indexOfObject:[self getProfileById:self.currentId]];
+        if (current==NSNotFound) return profiles.firstObject;
+        NSInteger next=current+([operation isEqual:@"next"]?1:-1);
+        if (next<0 || next>=(NSInteger)profiles.count) {
+            if (!wrap) return nil;
+            next=(next+(NSInteger)profiles.count)%(NSInteger)profiles.count;
+        }
+        return profiles[next];
+    }
+}
+- (Profile *)importProfileDirectory:(NSString *)directory name:(NSString *)name error:(NSError **)error {
+    @synchronized (self) {
+        if (error) *error=nil;
+        NSError *failure=nil;
+        struct stat st;
+        if (lstat(directory.fileSystemRepresentation,&st) || !S_ISDIR(st.st_mode) || S_ISLNK(st.st_mode)) {
+            if (error) *error=PXError(@"导入目录无效"); return nil;
+        }
+        NSArray *paths=[self.fileManager subpathsOfDirectoryAtPath:directory error:&failure];
+        if (!paths) { if (error) *error=failure; return nil; }
+        for (NSString *relative in paths) {
+            NSString *path=[directory stringByAppendingPathComponent:relative];
+            if (lstat(path.fileSystemRepresentation,&st) || (!S_ISREG(st.st_mode) && !S_ISDIR(st.st_mode))) {
+                if (error) *error=PXError(@"导入包包含符号链接或特殊文件"); return nil;
+            }
+        }
+        NSData *data=[NSData dataWithContentsOfFile:[directory stringByAppendingPathComponent:@"phoneInfo.json"] options:0 error:&failure];
+        id phone=data?[NSJSONSerialization JSONObjectWithData:data options:0 error:&failure]:nil;
+        if (!PXValidatePhoneDictionary(phone,&failure)) { if (error) *error=failure; return nil; }
+        NSString *identifier=[self generateProfileID];
+        NSString *destination=[self.profilesDirectory stringByAppendingPathComponent:identifier];
+        if (![self.fileManager copyItemAtPath:directory toPath:destination error:&failure]) { if (error) *error=failure; return nil; }
+        Profile *profile=[Profile new]; profile.id=identifier; profile.name=name.length?name:identifier; profile.createdDate=NSDate.date;
+        [self.mutableProfiles addObject:profile];
+        if (![self saveData]) {
+            [self.mutableProfiles removeObject:profile]; [self.fileManager removeItemAtPath:destination error:NULL];
+            if (error) *error=PXError(@"无法保存档案索引"); return nil;
+        }
+        return profile;
+    }
+}
 - (NSString *)getActiveDataPath {
     NSString *identifier = [self getActiveProfileId];
     return identifier.length ? [self.profilesDirectory stringByAppendingPathComponent:identifier] : nil;

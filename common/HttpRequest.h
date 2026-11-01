@@ -11,6 +11,8 @@ void sendGETRequest(NSString *urlString, RequestCompletionHandler completion);
 
 // POST请求 - 支持多种数据类型
 void daemonPOST(NSString *urlString, id parameters, RequestCompletionHandler completion);
+// Backups and restores can outlive ordinary 10-second API reads.
+void daemonCommandPOST(NSString *path, id parameters, RequestCompletionHandler completion);
 void sendPOSTRequest(NSString *urlString, id parameters, NSDictionary *headers, RequestCompletionHandler completion);
 
 // 其他HTTP方法

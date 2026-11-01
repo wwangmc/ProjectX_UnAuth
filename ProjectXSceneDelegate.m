@@ -1,6 +1,7 @@
 #import "ProjectXSceneDelegate.h"
 #import "ProjectXViewController.h"
 #import "TabBarController.h"
+#import "PXCommandRouter.h"
 
 @interface ProjectXSceneDelegate ()
 @property (nonatomic, strong) UINavigationController *navigationController;
@@ -50,8 +51,12 @@
         NSSet<UIOpenURLContext *> *urlContexts = connectionOptions.URLContexts;
         UIOpenURLContext *firstContext = urlContexts.allObjects.firstObject;
         NSURL *url = firstContext.URL;
+        [PXCommandRouter handleURL:url];
         
     }
+}
+- (void)scene:(UIScene *)scene openURLContexts:(NSSet<UIOpenURLContext *> *)URLContexts {
+    for (UIOpenURLContext *context in URLContexts) [PXCommandRouter handleURL:context.URL];
 }
 
 

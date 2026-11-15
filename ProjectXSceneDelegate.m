@@ -45,15 +45,7 @@
     
     [self.window makeKeyAndVisible];
     
-    
-    // Handle any URL contexts for deep linking
-    if (connectionOptions.URLContexts.count > 0) {
-        NSSet<UIOpenURLContext *> *urlContexts = connectionOptions.URLContexts;
-        UIOpenURLContext *firstContext = urlContexts.allObjects.firstObject;
-        NSURL *url = firstContext.URL;
-        [PXCommandRouter handleURL:url];
-        
-    }
+    [self scene:scene openURLContexts:connectionOptions.URLContexts];
 }
 - (void)scene:(UIScene *)scene openURLContexts:(NSSet<UIOpenURLContext *> *)URLContexts {
     for (UIOpenURLContext *context in URLContexts) [PXCommandRouter handleURL:context.URL];
@@ -128,4 +120,4 @@
 
 }
 
-@end 
+@end

@@ -1,6 +1,6 @@
 Package: com.hydra.projectx
 Name: Project X
-Version: 2.5.2
+Version: 2.6.0
 Architecture: iphoneos-arm
 Description: Spoof device identifiers and bypass security. For rootless jailbreak iOS 15+ devices.
 Depends: firmware (>= 13.0), mobilesubstrate, com.opa334.altlist

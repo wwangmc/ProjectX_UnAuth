@@ -10,6 +10,7 @@
 #import "ActionManager.h"
 #import "DBManager.h"
 #import <UIKit/UIKit.h>
+#import <pwd.h>
 #import <spawn.h>
 #import <sys/wait.h>
 #import <sys/stat.h>
@@ -22,13 +23,59 @@ static BOOL WriteJSON(id value,NSString *path,NSError **error) {
     NSData *data=[NSJSONSerialization dataWithJSONObject:value options:NSJSONWritingPrettyPrinted error:error];
     return data && [data writeToFile:path options:NSDataWritingAtomic error:error];
 }
-static id ReadJSON(NSString *path,NSError **error) {
-    struct stat st;
-    if (lstat(path.fileSystemRepresentation,&st) || !S_ISREG(st.st_mode) || st.st_size>4*1024*1024) {
-        if (error) *error=PXError(@"参数/清单文件不存在、过大或不是普通文件"); return nil;
+static BOOL WriteGPTParameters(NSDictionary *phone, NSString *path, NSError **error) {
+    NSData *data = [NSJSONSerialization dataWithJSONObject:phone options:NSJSONWritingPrettyPrinted error:error];
+    if (!data) return NO;
+    struct passwd *mobile = getpwnam("mobile");
+    if (!mobile) {
+        if (error) *error = PXError(@"找不到 mobile 用户");
+        return NO;
     }
-    NSData *data=[NSData dataWithContentsOfFile:path options:0 error:error];
-    return data?[NSJSONSerialization JSONObjectWithData:data options:0 error:error]:nil;
+    uid_t owner = mobile->pw_uid;
+    gid_t group = mobile->pw_gid;
+    int directory = open(path.stringByDeletingLastPathComponent.fileSystemRepresentation, O_RDONLY | O_DIRECTORY | O_NOFOLLOW);
+    if (directory < 0) {
+        if (error) *error = PXError(@"无法打开 GPT 参数导出目录");
+        return NO;
+    }
+    NSString *temporaryName = [@"." stringByAppendingString:NSUUID.UUID.UUIDString];
+    int file = openat(directory, temporaryName.fileSystemRepresentation, O_WRONLY | O_CREAT | O_EXCL | O_NOFOLLOW, 0600);
+    BOOL success = NO;
+    if (file >= 0) {
+        NSFileHandle *handle = [[NSFileHandle alloc] initWithFileDescriptor:file closeOnDealloc:YES];
+        BOOL written = fchown(file, owner, group) == 0 && [handle writeData:data error:error];
+        BOOL closed = [handle closeAndReturnError:written ? error : NULL];
+        success = written && closed &&
+            renameat(directory, temporaryName.fileSystemRepresentation, directory, path.lastPathComponent.fileSystemRepresentation) == 0;
+        if (!success) unlinkat(directory, temporaryName.fileSystemRepresentation, 0);
+    }
+    close(directory);
+    if (!success && error && !*error) *error = PXError(@"无法写入 GPT 参数导出文件");
+    return success;
+}
+static id ReadJSONFile(int file, NSError **error) {
+    const NSUInteger limit = 4 * 1024 * 1024;
+    struct stat st;
+    if (file < 0 || fstat(file, &st) || !S_ISREG(st.st_mode) || st.st_size < 0 || st.st_size > (off_t)limit) {
+        if (file >= 0) close(file);
+        if (error) *error = PXError(@"参数/清单文件不存在、过大或不是普通文件");
+        return nil;
+    }
+    NSMutableData *data = [NSMutableData dataWithCapacity:(NSUInteger)st.st_size];
+    uint8_t buffer[16384];
+    ssize_t size;
+    while ((size = read(file, buffer, sizeof(buffer))) > 0 && data.length + (NSUInteger)size <= limit) {
+        [data appendBytes:buffer length:(NSUInteger)size];
+    }
+    close(file);
+    if (size != 0) {
+        if (error) *error = PXError(@"参数/清单文件读取失败或超过大小限制");
+        return nil;
+    }
+    return [NSJSONSerialization JSONObjectWithData:data options:0 error:error];
+}
+static id ReadJSON(NSString *path,NSError **error) {
+    return ReadJSONFile(open(path.fileSystemRepresentation, O_RDONLY | O_NOFOLLOW | O_NONBLOCK), error);
 }
 static void StopApp(NSString *bundle) {
     LSApplicationProxy *proxy=[LSApplicationProxy applicationProxyForIdentifier:bundle];
@@ -150,6 +197,17 @@ static NSDictionary *SnapshotKeychain(NSString *bundle,NSString *container,NSErr
     NSString *path=[[self.profiles.dataDirectory stringByAppendingPathComponent:@"Transfer"] stringByAppendingPathComponent:kind];
     if (![NSFileManager.defaultManager createDirectoryAtPath:path withIntermediateDirectories:YES attributes:@{NSFilePosixPermissions:@0755,NSFileOwnerAccountName:@"mobile",NSFileGroupOwnerAccountName:@"mobile"} error:error]) return nil;
     return path;
+}
+- (NSString *)gptTransferDirectoryForImport:(BOOL)importing error:(NSError **)error {
+    NSString *path = importing ? @"/var/mobile/gptimportpara" : @"/var/mobile/gptexportpara";
+    struct stat st;
+    if (lstat(path.fileSystemRepresentation, &st) == 0) {
+        if (S_ISDIR(st.st_mode)) return path;
+        if (error) *error = PXError(@"GPT 参数目录无效");
+        return nil;
+    }
+    NSDictionary *attributes = @{NSFilePosixPermissions: @0755, NSFileOwnerAccountName: @"mobile", NSFileGroupOwnerAccountName: @"mobile"};
+    return [NSFileManager.defaultManager createDirectoryAtPath:path withIntermediateDirectories:NO attributes:attributes error:error] ? path : nil;
 }
 - (NSDictionary *)settings {
     if (self.commandSettings) return self.commandSettings;
@@ -333,7 +391,11 @@ static NSDictionary *SnapshotKeychain(NSString *bundle,NSString *container,NSErr
                 for (NSString *key in @[@"idfa",@"idfv"]) if (parameters[key]) { phone[key]=parameters[key]; found=YES; }
                 if (!found) { if (error) *error=PXError(@"请提供 idfa 或 idfv"); return nil; }
             }
-            return [self perform:@"setPhoneInfo" parameters:phone error:error];
+            id saved = [self perform:@"setPhoneInfo" parameters:phone error:error];
+            if (saved && [parameters[@"returnIdentifiers"] isEqual:@YES]) {
+                return @{@"newIDFA": phone[@"idfa"], @"newIDFV": phone[@"idfv"]};
+            }
+            return saved;
         }
         if ([command isEqual:@"setAppVersion"]) {
             NSString *bundle=parameters[@"bundleID"];
@@ -368,8 +430,14 @@ static NSDictionary *SnapshotKeychain(NSString *bundle,NSString *container,NSErr
                 if (match) { if (error) *error=PXError(@"同名档案不唯一"); return nil; } match=p;
             }
             if (!match) { if (error) *error=PXError(@"档案不存在"); return nil; }
-            return [command isEqual:@"deleteProfileByName"]?[self perform:@"deleteProfiles" parameters:@{@"ids":@[match.id]} error:error]:
-                [self perform:@"disableProfile" parameters:@{@"id":match.id,@"hours":parameters[@"hours"] ?: @0} error:error];
+            if ([command isEqual:@"deleteProfileByName"]) {
+                if ([self.profiles isCurrent:match] || [match.id isEqual:@"0"]) {
+                    if (error) *error = PXError(@"当前档案或原始档案不可删除");
+                    return nil;
+                }
+                return [self perform:@"deleteProfiles" parameters:@{@"ids":@[match.id]} error:error];
+            }
+            return [self perform:@"disableProfile" parameters:@{@"id":match.id,@"hours":parameters[@"hours"] ?: @0} error:error];
         }
         if ([command isEqual:@"newPhone"]) {
             for (NSString *key in @[@"version",@"model"]) if (parameters[key] && (![parameters[key] isKindOfClass:NSString.class] || [parameters[key] length]>128)) { if (error) *error=PXError(key); return nil; }
@@ -523,22 +591,50 @@ static NSDictionary *SnapshotKeychain(NSString *bundle,NSString *container,NSErr
             MobilePermissions(path); return @YES;
         }
         if ([command isEqual:@"exportParameters"]) {
-            NSString *folder=[self transferDirectory:@"Exports" error:error]; if (!folder) return nil;
+            BOOL gptTransfer = [parameters[@"gptTransfer"] isEqual:@YES];
+            NSString *folder = gptTransfer ? [self gptTransferDirectoryForImport:NO error:error] : [self transferDirectory:@"Exports" error:error];
+            if (!folder) return nil;
             NSString *path=[folder stringByAppendingPathComponent:[NSUUID.UUID.UUIDString stringByAppendingPathExtension:@"json"]];
             NSDictionary *phone=[PhoneInfo loadFromPrefs].toDictionary;
-            if (!PXValidatePhoneDictionary(phone,error) || !WriteJSON(phone,path,error)) return nil;
-            MobilePermissions(folder); return @{ @"path":path };
+            if (!PXValidatePhoneDictionary(phone,error)) return nil;
+            if (gptTransfer) {
+                if (!WriteGPTParameters(phone, path, error)) return nil;
+            } else {
+                if (!WriteJSON(phone, path, error)) return nil;
+                MobilePermissions(folder);
+            }
+            return @{@"path": path};
         }
         if ([@[@"importParameters",@"importProfiles"] containsObject:command]) {
+            BOOL importParameters = [command isEqual:@"importParameters"];
+            BOOL gptTransfer = importParameters && [parameters[@"gptTransfer"] isEqual:@YES];
             NSString *filename=parameters[@"filename"];
-            if (![filename isKindOfClass:NSString.class] || !filename.length || ![filename isEqual:filename.lastPathComponent] || [filename containsString:@".."] || [filename containsString:@"\\"]) {
+            NSString *folder;
+            if (gptTransfer) {
+                folder = [self gptTransferDirectoryForImport:YES error:error];
+                if (!folder) return nil;
+                NSArray<NSString *> *files = [fm contentsOfDirectoryAtPath:folder error:error];
+                if (!files) return nil;
+                if (files.count != 1) {
+                    if (error) *error = PXError(@"请在 /var/mobile/gptimportpara 放入一个 ProjectX 参数文件");
+                    return nil;
+                }
+                filename = files.firstObject;
+            }
+            if (![filename isKindOfClass:NSString.class] || !filename.length || ![filename isEqual:filename.lastPathComponent] ||
+                [filename containsString:@".."] || [filename containsString:@"\\"] ||
+                [filename rangeOfCharacterFromSet:NSCharacterSet.controlCharacterSet].location != NSNotFound) {
                 if (error) *error=PXError(@"导入文件名无效"); return nil;
             }
-            NSString *folder=[self transferDirectory:@"Imports" error:error]; if (!folder) return nil;
-            NSString *path=[folder stringByAppendingPathComponent:filename]; struct stat st;
-            if (lstat(path.fileSystemRepresentation,&st) || !S_ISREG(st.st_mode)) { if (error) *error=PXError(@"导入文件不存在或为链接"); return nil; }
-            if ([command isEqual:@"importParameters"]) {
-                NSDictionary *phone=PXValidatePhoneDictionary(ReadJSON(path,error),error); if (!phone) return nil;
+            if (!gptTransfer) folder = [self transferDirectory:@"Imports" error:error];
+            if (!folder) return nil;
+            if (importParameters) {
+                int directory = open(folder.fileSystemRepresentation, O_RDONLY | O_DIRECTORY | O_NOFOLLOW);
+                int file = directory < 0 ? -1 : openat(directory, filename.fileSystemRepresentation, O_RDONLY | O_NOFOLLOW | O_NONBLOCK);
+                if (directory >= 0) close(directory);
+                id value = ReadJSONFile(file, error);
+                if (!value) return nil;
+                NSDictionary *phone=PXValidatePhoneDictionary(value,error); if (!phone) return nil;
                 NSString *active=[self.profiles getActiveDataPath];
                 if (!active) { if (error) *error=PXError(@"请先创建档案"); return nil; }
                 NSDictionary *old=[PhoneInfo loadFromPrefs].toDictionary;
@@ -546,6 +642,8 @@ static NSDictionary *SnapshotKeychain(NSString *bundle,NSString *container,NSErr
                 if (!WriteJSON(phone,[active stringByAppendingPathComponent:@"phoneInfo.json"],error)) { if (old) [PhoneInfo saveDictionaryToPrefs:old]; return nil; }
                 return @YES;
             }
+            NSString *path=[folder stringByAppendingPathComponent:filename]; struct stat st;
+            if (lstat(path.fileSystemRepresentation,&st) || !S_ISREG(st.st_mode)) { if (error) *error=PXError(@"导入文件不存在或为链接"); return nil; }
             NSString *stage=[folder stringByAppendingFormat:@"/.stage-%@",NSUUID.UUID.UUIDString];
             if (!PXExtractArchive(path,stage,error)) return nil;
             NSDictionary *manifest=ReadJSON([stage stringByAppendingPathComponent:@"manifest.json"],error);

@@ -139,33 +139,50 @@ mach_vm_region、运行时符号隐藏等其余入口仍留在 F12。F29 的系�
 newPhone/switchProfile/navigateProfile、renameProfile/disableProfile/reorderProfile/deleteProfiles、
 exportProfiles/importProfiles、exportParameters/importParameters、setPhoneInfo/modifyIdentifier/randomIDFA、
 setAppVersion/updateParameters、clearPasteboard/clearSafari/clearSystemResidues、keychainStatus/fetchIDFA。
-import 命令仅接受 Imports 目录中的 `filename`，不接受任意系统路径。
+普通 import 命令使用 Imports 目录中的 `filename`。GPT URL 使用下文的固定目录。
 成功返回 `{"status":"success","data":...}`，失败返回 HTTP 400 与 message；长操作不使用普通读请求的 10 秒超时。
 
-URL 示例（名称参数需要 URL 编码）：
+## GPT URL Scheme
 
-```text
-projectx://cmd/newPhone
-projectx://cmd/newPhone?version=18.5&model=iPhone14%2C7
-projectx://cmd/nextBackupData
-projectx://cmd/preBackupData
-projectx://cmd/activeFirstBackupData
-projectx://cmd/activeLastBackupData
-projectx://cmd/activeBackupDataByName?name=demo
-projectx://cmd/setDisableTime?name=demo&time=2
-projectx://cmd/exportPara
-projectx://cmd/setAppVersion?bundleID=com.example.demo&version=1.2&build=42
-```
+以下是 GPT 2.14-602 中已适配的 18 个命令。脚本可直接使用 `GPT://cmd/`，参数值按 URL 编码。
+原有 `projectx://`、`weaponx://` 链接仍可用。
 
-保留 weaponx scheme；未注册 GPT scheme，避免抢占 GPT 原应用。
-执行结果写到 `/private/var/mobile/Media/ProjectX/command-result.json`。
+| URL | ProjectX 执行的操作 |
+|---|---|
+| `GPT://cmd/open` | 打开 ProjectX |
+| `GPT://cmd/newPhone` | 按当前随机策略生成并激活新档案 |
+| `GPT://cmd/newPhone?version=18.5` | 指定系统版本生成新档案 |
+| `GPT://cmd/nextBackupData` | 切换到下一条可用档案 |
+| `GPT://cmd/preBackupData` | 切换到上一条可用档案 |
+| `GPT://cmd/activeFirstBackupData` | 切换到第一条可用档案 |
+| `GPT://cmd/activeLastBackupData` | 切换到最后一条可用档案 |
+| `GPT://cmd/activeBackupDataByName?name=demo` | 按名称切换档案 |
+| `GPT://cmd/deleteBackupDataByName?name=demo` | 按名称删除档案，当前档案和 ID 为 `0` 的档案受保护 |
+| `GPT://cmd/getAllBackupDataNames` | 将档案名称逐行写到 `/var/mobile/gptrecords.txt` |
+| `GPT://cmd/cleanAllBackupData` | 批量删除其他档案，保留当前档案和 ID 为 `0` 的档案 |
+| `GPT://cmd/renameCurrentBackupData?name=demo` | 重命名当前档案 |
+| `GPT://cmd/modifyIdfa?idfa=CD0278A1-7DF9-4CE9-B2D3-459C5B919FE9` | 修改当前 IDFA |
+| `GPT://cmd/modifyIdfa?idfv=B283221C-5B03-4781-9F12-DA580DA0B331` | 修改当前 IDFV，沿用 GPT 的 `modifyIdfa` 路径 |
+| `GPT://cmd/newIDFA` | 生成随机 IDFA |
+| `GPT://cmd/setDisableTime?name=demo&time=2` | 禁用指定档案 2 小时，`time=0` 解除 |
+| `GPT://cmd/setAppVersion?bundleID=com.example.demo&version=1.2&build=42` | 覆盖已选应用读到的版本和构建号 |
+| `GPT://cmd/exportPara` | 将 ProjectX 参数 JSON 导出到 `/var/mobile/gptexportpara/`，输出路径见结果 JSON 的 `data.path` |
+| `GPT://cmd/importPara` | 从 `/var/mobile/gptimportpara/` 读取唯一的 ProjectX 参数 JSON，保留导入源文件 |
+| `GPT://cmd/updatepara?model=iPhone14%2C7&OSVersion=18.5` | 更新当前档案的机型和系统 |
+
+`/var/mobile/gptresult.txt` 中的 `2` 表示执行中，`1` 表示成功，`0` 表示失败。
+IDFA 或 IDFV 更新成功后，`/var/mobile/gptrecordparam.txt` 提供 `newIDFA` 和 `newIDFV`。
+完整结果或错误写到 `/private/var/mobile/Media/ProjectX/command-result.json`。
+参数导入导出使用 ProjectX JSON。GPT 原生 plist 格式、App Store 状态清理开关、沙盒子目录重建、AFIP 和 IDFA/IDFV 独立开关留在 TODOLIST。
+
+GPT 与 ProjectX 同时安装时，iOS 会在两个注册了 `GPT` 的 App 中选择接收方。需要固定交给 ProjectX 的脚本可用 `projectx://`。 [Apple 的 URL Scheme 说明](https://developer.apple.com/documentation/xcode/defining-a-custom-url-scheme-for-your-app)
 
 ## 验证
 
 独立 Foundation 回归使用临时目录和 127.0.0.1 HTTP fixture，覆盖配置、内存单位、URL 解析、
 ZIP 往返和恶意归档拒绝、目录保留、档案禁用/顺序/导入、索引失败回滚及原 HTTP 测试。
-本地原生 Hook 回归共 918 项通过（SDK 341、签名拒绝 170、ABI/入口解析 95、动态库加载 103、功能 86、原有 123）。
-未配置本机 Hook 库的默认回归为 849 项。原生 Hook 库仅用于 macOS 测试，不进入 iOS 安装包。
+原生 Hook 基线回归共 918 项通过（SDK 341、签名拒绝 170、ABI/入口解析 95、动态库加载 103、功能 86、原有 123）。
+本次 GPT URL 适配后，未配置本机 Hook 库的默认回归为 921 项。原生 Hook 库仅用于 macOS 测试。
 SDK 模拟类验证了 105 个目标安装、原调用保留、继承/异常回退与并发。Theos 三种模式分别 clean、编译打包；
 安装包路径、SHA256 与 Mach-O 检查记录在 [BUILD_VERIFICATION.json](BUILD_VERIFICATION.json)。
 真实注入、AppGroup 权限、SDK 动态加载、照片授权与钥匙串往返仍需设备验证。

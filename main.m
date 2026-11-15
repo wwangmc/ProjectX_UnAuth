@@ -20,8 +20,6 @@
     
     self.window.rootViewController = tabBarController;
     [self.window makeKeyAndVisible];
-    NSURL *url=launchOptions[UIApplicationLaunchOptionsURLKey];
-    if (url) [PXCommandRouter handleURL:url];
     
     return YES;
 }

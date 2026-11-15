@@ -89,7 +89,12 @@
   - 参考：disableTime；doNext:/doPre:；activeFirst/Last；手工排序；批量删除/导出；App 0x1000c7c3c、0x1000c83e8、0x1000c8710、0x1000c9910、0x1000cf564
   - 原现状：已有搜索、单条切换/重命名/删除；没有禁用时间、上/下条命令及同等批量流程；deleteAllProfiles 内 TODO clearAll
 - [x] F22 URL scheme 命令集与执行结果文件（基线：部分覆盖）
-  - 实现状态：已接通冷启动/运行中 URL 分发、统一后台命令与结果 JSON；显式机型/系统参数可传给新机命令。
+  - 实现状态：已注册 GPT scheme，23 个命令中 18 个复用现有功能，冷启动和运行中均走同一入口。支持 GPT 状态及结果文件，完整 URL 见 docs/GPT_FEATURES.md。
+  - [ ] 暂缓 GPT://cmd/setCleanAppstoreOn?open=Y / N（App Store 状态清理开关）
+  - [ ] 暂缓 GPT://cmd/createSubDirOfStandBox（将沙盒子目录移到备份位置并重建）
+  - [ ] 暂缓 GPT://cmd/changeidfa?op= 和 GPT://cmd/changeidfv?op=（独立启停 IDFA / IDFV 覆盖）
+  - [ ] 暂缓 GPT://cmd/setAFIP?afip=（GPT 的 AFIP 参数入口）
+  - [ ] 暂缓 GPT 原生参数 plist 的导入和导出格式互通。已支持 GPT URL、目录及 ProjectX 参数 JSON。
   - 参考：GPT://cmd/newPhone、next/preBackupData、activeFirst/Last、按名切换/删除、modifyIdfa、setAppVersion、exportPara 等；gptresult.txt；App -[GPTAppDelegate application:openURL:options:] 0x1000d1a6c
   - 原现状：ProjectX 有 HTTP 后台接口；Info.plist 注册 URL scheme，但 SceneDelegate 只读 URL 无命令分发，不能算已支持同等 URL 命令
 - [x] F23 可配置随机参数策略（基线：部分覆盖）

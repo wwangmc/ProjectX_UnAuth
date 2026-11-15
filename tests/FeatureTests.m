@@ -20,6 +20,62 @@ static void Put(NSString *path,NSString *value) {
     EXPECT([value writeToFile:path atomically:YES encoding:NSUTF8StringEncoding error:NULL]);
 }
 static NSDictionary *Phone(void) { return @{@"idfa":@"CD0278A1-7DF9-4CE9-B2D3-459C5B919FE9",@"idfv":@"B283221C-5B03-4781-9F12-DA580DA0B331",@"runtime":@{@"location":@{@"latitude":@31.2,@"longitude":@121.5},@"timeZoneName":@"Asia/Shanghai",@"outputVolume":@0.5}}; }
+
+static void TestGPTURLs(void) {
+    NSString *uuid = Phone()[@"idfa"];
+    NSArray *supported = @[
+        @[@"open", @"open", @{}],
+        @[@"newPhone", @"newPhone", @{}],
+        @[@"newPhone?version=18.5", @"newPhone", @{@"version": @"18.5"}],
+        @[@"nextBackupData", @"navigateProfile", @{@"operation": @"next"}],
+        @[@"preBackupData", @"navigateProfile", @{@"operation": @"previous"}],
+        @[@"activeFirstBackupData", @"navigateProfile", @{@"operation": @"first"}],
+        @[@"activeLastBackupData", @"navigateProfile", @{@"operation": @"last"}],
+        @[@"activeBackupDataByName?name=%E6%A1%A3%E6%A1%88%20A%26B%2B%3D", @"switchProfile", @{@"name": @"档案 A&B+="}],
+        @[@"deleteBackupDataByName?name=demo", @"deleteProfileByName", @{@"name": @"demo"}],
+        @[@"getAllBackupDataNames", @"listProfiles", @{}],
+        @[@"cleanAllBackupData", @"deleteInactiveProfiles", @{}],
+        @[@"renameCurrentBackupData?name=demo", @"renameProfile", @{@"name": @"demo"}],
+        @[[@"modifyIdfa?idfa=" stringByAppendingString:uuid], @"modifyIdentifier", @{@"idfa": uuid, @"returnIdentifiers": @YES}],
+        @[[@"modifyIdfa?idfv=" stringByAppendingString:uuid], @"modifyIdentifier", @{@"idfv": uuid, @"returnIdentifiers": @YES}],
+        @[@"newIDFA", @"randomIDFA", @{@"returnIdentifiers": @YES}],
+        @[@"setDisableTime?name=demo&time=1.5", @"disableProfileByName", @{@"name": @"demo", @"hours": @1.5}],
+        @[@"setDisableTime?name=demo&time=0", @"disableProfileByName", @{@"name": @"demo", @"hours": @0}],
+        @[@"setAppVersion?bundleID=com.example.demo&version=1.2&build=42", @"setAppVersion",
+            @{@"bundleID": @"com.example.demo", @"version": @"1.2", @"build": @"42"}],
+        @[@"exportPara", @"exportParameters", @{@"gptTransfer": @YES}],
+        @[@"importPara", @"importParameters", @{@"gptTransfer": @YES}],
+        @[@"updatepara?model=iPhone14%2C7&OSVersion=18.5", @"updateParameters",
+            @{@"model": @"iPhone14,7", @"OSVersion": @"18.5"}],
+    ];
+    for (NSArray *test in supported) {
+        NSURL *url = [NSURL URLWithString:[@"GPT://cmd/" stringByAppendingString:test[0]]];
+        NSError *error = nil;
+        NSDictionary *request = PXParseCommandURL(url, &error);
+        EXPECT(PXIsGPTCommandURL(url));
+        EXPECT(!error && [request[@"command"] isEqual:test[1]] && [request[@"parameters"] isEqual:test[2]]);
+    }
+    NSArray *invalid = @[@"changeidfa?op=Y", @"changeidfv?op=N", @"setAFIP?afip=127.0.0.1",
+        @"createSubDirOfStandBox", @"setCleanAppstoreOn?open=Y", @"setCleanAppstoreOn?open=N",
+        @"getSettings", @"openAnything", @"newPhone/extra", @"newphone", @"newPhone?version=18.5&version=18.6",
+        @"nextBackupData?operation=last", @"activeBackupDataByName?name=demo&id=0",
+        @"renameCurrentBackupData?name=", @"deleteBackupDataByName?name=%00",
+        @"setDisableTime?name=demo", @"setDisableTime?name=demo&time=-1", @"setDisableTime?name=demo&time=inf",
+        @"setAppVersion?bundleID=com.example.demo&version=1.2", @"updatepara?model=iPhone14%2C7",
+        @"modifyIdfa?idfa=invalid", @"modifyIdfa", @"importPara?filename=../bad", @"open#fragment",
+        [NSString stringWithFormat:@"modifyIdfa?idfa=%@&idfv=%@", uuid, uuid]];
+    for (NSString *suffix in invalid) {
+        NSError *error = nil;
+        NSURL *url = [NSURL URLWithString:[@"GPT://cmd/" stringByAppendingString:suffix]];
+        EXPECT(PXParseCommandURL(url, &error) == nil && error != nil);
+    }
+    EXPECT([PXParseCommandURL([NSURL URLWithString:@"gpt://CMD/open"], NULL)[@"command"] isEqual:@"open"]);
+    EXPECT(PXParseCommandURL([NSURL URLWithString:@"GPT://other/open"], NULL) == nil);
+    EXPECT(PXParseCommandURL([NSURL URLWithString:@"GPT://user@cmd/open"], NULL) == nil);
+    EXPECT(PXParseCommandURL([NSURL URLWithString:@"GPT://cmd:123/open"], NULL) == nil);
+    EXPECT(!PXIsGPTCommandURL([NSURL URLWithString:@"projectx://cmd/open"]));
+}
+
 void PXRunFeatureTests(NSString *directory) {
     NSFileManager *fm=NSFileManager.defaultManager; NSError *error=nil;
     EXPECT(PXValidatePhoneDictionary(Phone(),&error)!=nil);
@@ -56,6 +112,7 @@ void PXRunFeatureTests(NSString *directory) {
     EXPECT(PXParseCommandURL([NSURL URLWithString:@"https://cmd/newPhone"],&error)==nil);
     EXPECT([PXParseCommandURL([NSURL URLWithString:@"projectx://cmd/newPhone?version=18.5&model=iPhone14%2C7"],&error)[@"parameters"][@"model"] isEqual:@"iPhone14,7"]);
     EXPECT([PXParseCommandURL([NSURL URLWithString:@"projectx://cmd/updatepara?OSVersion=18.5"],&error)[@"command"] isEqual:@"updateParameters"]);
+    TestGPTURLs();
     NSString *root=[directory stringByAppendingPathComponent:@"features"];
     NSString *live=[root stringByAppendingPathComponent:@"live"],*snapshot=[root stringByAppendingPathComponent:@"snapshot"];
     Put([live stringByAppendingPathComponent:@"Library/Preferences/token"],@"keep");
